@@ -851,17 +851,19 @@ def simulate_game(agent1, agent2, agent3, agent4, dealer=3, verbose=False):
         legal_plays_str = '  '.join([str(p) for p in legal_plays])
         play = agent_map[game.next_player].select_play(game)
         if verbose:
+            name = game.players[game.next_player].name
             if game.tricks < 0:
                 # declaration phase
                 if game.turns == 1:
                     print("   --------")    # 1st player to declare
-                print(f"   Player{game.next_player + 1}: {legal_plays_str:<48}"
-                      f" => Declaration: ", end='')
+                print(f"   {name}: {legal_plays_str:<48} => ", end='')
             else:
                 if game.turns == 0:
                     print("   --------")    # 1st player to play card
-                print(f"   Player{game.next_player + 1}: {legal_plays_str:<48}"
-                      f" => Trick: ", end='')
+                    direction = '\u2193' if game.higher_card_wins() else '\u2191'
+                    print(f"   Trick {game.tricks + 1}: {direction}")
+                print(f"   {name}: {legal_plays_str:<48}"
+                      f" => ", end='')
             if len(game.table) == 0:
                 # 1st card
                 print(f"{str(play)}")

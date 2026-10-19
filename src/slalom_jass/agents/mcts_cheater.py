@@ -140,10 +140,11 @@ class MCTSNode():
         Args:
             state (GameState):  game state at this node.
             parent (MCTSNode):  parent node that led to this node.
-            play (Card):        card played, that directly led to this node.
+            play (str or Card): declaration or card, that directly led to this
+                                node.
         """
         self.parent = parent    # parent of this node
-        self.play = play        # card play that led directly to this node.
+        self.play = play        # play that led directly to this node.
         self.children = []      # children nodes with this node as parent.
         self.wins = 0           # wins of active player in parent node.
         self.visits = 0         # number of times this node was visited.
@@ -198,7 +199,7 @@ class MCTSNode():
             search along fewer paths.
 
             Args:
-                child (MultiPlayerMCTSNode):    child node.
+                child (MCTSNode):    child node.
 
             Returns:
                 float:  Upper Confidence Bound 1 (UCB1).
@@ -243,9 +244,9 @@ class MCTSNode():
         rollout, we have to update it's win counter with the result of the
         rollout (simulation using randomly selected legal plays) and we also
         have to increment its visits counter.
-        As result of the simulation we get the penalty points for each player,
-        which we've converted to a score of 0.0 to 1.0 per player (e.g. a
-        player has not gotten any penalty points, he gets a score of 1.0).
+        As result of the simulation we get the card points for each player,
+        which we've converted to a score of 0.0 to 1.0 per team (e.g. a team
+        has not gotten all 157 card points, both players get a score of 1.0).
         If this node is not the root node (i.e. if this node has a parent),
         add the reward received by the active player in the parent node (i.e.
         the player who selected the play which led to this node) in the
@@ -299,7 +300,7 @@ class MCTSNode():
 
 class MCTSCheater(Agent):
     """
-    Implementation of cheating Hearts-Agent using MCTS.
+    Implementation of cheating Slalom-Jass-Agent using MCTS.
     
     To avoid the problems caused by applying MCTS to games with imperfect
     information, we let our agent cheat (i.e. look at other players' cards).
@@ -313,9 +314,9 @@ class MCTSCheater(Agent):
     from which the simulation was started (if the winning player was the active
     player in the parent node, i.e. has selected the action leading to this
     node).
-    In a 4-player game of hearts the simulation returns a list of penalty
+    In a 4-player game of Slalom-Jass the simulation returns a list of card
     points per player, which we will convert to scores between 0.0 and 1.0
-    accumulated in the corresponding nodes. 
+    (per team) accumulated in the corresponding nodes. 
 
     Attributes:
         num_rounds (int):       number of rollouts.
@@ -324,10 +325,12 @@ class MCTSCheater(Agent):
         log_tree(bool):         True => show tree.
         max_depth (int):        show tree max depth
         log_nlwt (bool):        True => nodes, levels, wins, time.
-        show_turn(int):         show rollout details for this turn.
+        show_trick(int):        show rollout details for this trick.
+        show_player(int):       show details for this player.
     """
     def __init__(self, num_rounds, simple=False, temperature=1.6,
-                 log_tree=False, max_depth=3, log_nlwt=False, show_turn=0):
+                 log_tree=False, max_depth=3, log_nlwt=False, show_trick=-2,
+                 show_player=-1):
         """
         Initializer.
 
@@ -338,6 +341,8 @@ class MCTSCheater(Agent):
             log_tree(bool):         True => show tree.
             max_depth (int):        show tree max depth
             log_nlwt (bool)         True => nodes, levels, wins, time.
+            show_trick(int):        show rollout details for this trick.
+            show_player(int):       show details for this player.
         """
         Agent.__init__(self)        # base class initializer.
         self.num_rounds = num_rounds
@@ -346,7 +351,8 @@ class MCTSCheater(Agent):
         self.log_tree = log_tree
         self.max_depth = max_depth
         self.log_nlwt = log_nlwt
-        self.show_turn = show_turn
+        self.show_trick = show_trick
+        self.show_player = show_player
 
     def set_temperature(self, temperature):
         """
@@ -372,7 +378,8 @@ class MCTSCheater(Agent):
             "log_tree": self.log_tree,
             "max_depth": self.max_depth,
             "log_nlwt": self.log_nlwt,
-            "show_turn": self.show_turn
+            "show_trick": self.show_trick,
+            "show_player": self.show_player
         }
         # write data to json-file.
         if not filename.endswith('.json'):
@@ -385,7 +392,7 @@ class MCTSCheater(Agent):
     @staticmethod
     def simulate_random_game(game, simple=False):
         """
-        Simulate game with  random or simple bots selecting legal moves.
+        Simulate game with random or simple bots selecting legal moves.
 
         Args:
             game (GameState):   game state from which the simulation starts.
@@ -404,25 +411,25 @@ class MCTSCheater(Agent):
         while not game.is_over():
             bot_play = bots[game.next_player].select_play(game)
             game = game.apply_play(bot_play)
-        # return penalty points per player
+        # return card points per player
         return game.count_points()
 
     def select_play(self, game_state):
         """
         Select legal card play with Monte Carlo Tree Search (MCTS).
 
-        The Cheater-agent treats 'Hearts' as a deterministic game, i.e. it not
-        only knows its own hand cards, but also (illegally) looks at the hands
-        of the other players. Therefore, we can use the same algorithm as for
-        perfect information games like 'Connect 4' or 'Go' but adapted for 4
-        players.
+        The Cheater-agent treats 'Slalom-Jass' as a deterministic game, i.e. it
+        not only knows its own hand cards, but also (illegally) looks at the
+        hands of the other players. Therefore, we can use the same algorithm as
+        for perfect information games like 'Connect 4' or 'Go' but adapted for
+        4 players.
 
         Args:
             game_state (GameState):     game state for which we want to find
                                         the best next move.
 
         Returns:
-            Card:       Best legal card play possible from this game state.
+            str or Card:    Best legal play possible from this game state.
         """
         legal_plays = game_state.get_legal_plays()
         if len(legal_plays) == 1:
@@ -439,7 +446,8 @@ class MCTSCheater(Agent):
 
         # loop through the specified number of rollouts.
         for i in range(self.num_rounds):
-            if game_state.turns == self.show_turn:
+            if (game_state.tricks == self.show_trick
+                and game_state.next_player == self.show_player):
                 print(f"\nROLLOUT {i + 1}")
             node = root_node     # start each search at the root node
 
@@ -454,7 +462,8 @@ class MCTSCheater(Agent):
                 # list of untried moves is empty and node has children
                 # => use UCT to select child node with highest UCB1
                 node = node.select_child_uct(self.temperature)
-                if game_state.turns == self.show_turn:
+                if (game_state.tricks == self.show_trick
+                    and game_state.next_player == self.show_player):
                     node.show_select(self.temperature)
                 # apply action which leads to child to the current state
                 # => clone of original game enters corresponding (child) state.
@@ -466,7 +475,8 @@ class MCTSCheater(Agent):
             if node.untried_plays:
                 # randomly select 1 of the available plays
                 play = random.choice(node.untried_plays)
-                if game_state.turns == self.show_turn:
+                if (game_state.tricks == self.show_trick
+                    and game_state.next_player == self.show_player):
                     node.show_expand(play)
                 # apply this move to the state of the cloned game
                 state = state.apply_play(play)
@@ -479,13 +489,14 @@ class MCTSCheater(Agent):
             # 3. SIMULATE (Rollout): Fast simulation to a terminal game state.
             # simulate a game with agents selecting plays at random or using
             # simple heuristics, from this node's game state.
-            penalties = self.simulate_random_game(state, self.simple)
-            if game_state.turns == self.show_turn:
-                results = [f"P{p + 1}:{penalties[p]}" for p in range(4)]
+            points = self.simulate_random_game(state, self.simple)
+            if (game_state.tricks == self.show_trick
+                and game_state.next_player == self.show_player):
+                results = [f"P{p + 1}:{points[p]}" for p in range(4)]
                 print(f"SIMULATE: {' '.join(results)}")
 
-            # convert penalty points into score from 0.0 to 1.0 per player.
-            score = penalties_to_score(penalties)
+            # convert penalty points into score from 0.0 to 1.0 per team.
+            score = points_to_score(points)
 
             # 4. BACKPROPAGATE: bubble the score up the tree through all
             #                   parents to the root.
@@ -500,7 +511,7 @@ class MCTSCheater(Agent):
             max_levels = max(max_levels, levels)
 
         # print whole tree
-        if self.log_tree:
+        if self.log_tree and game_state.next_player == self.show_player:
             show_tree(root_node, max_depth=self.max_depth)
 
         # after all rollouts have been done, check the win counters in root's
@@ -518,7 +529,7 @@ class MCTSCheater(Agent):
 
         # print number of nodes, number of levels,
         # and win percentage of selected move.
-        if self.log_nlwt:
+        if self.log_nlwt and game_state.next_player == self.show_player:
             print(f"\n   nodes:{nof_nodes} levels:{max_levels - 1} "
                   f"wins:{100 * best_win_ratio:2.1f}% "
                   f"time:{1000 * duration / self.num_rounds:.2f} ms/rollout\n")
@@ -530,37 +541,54 @@ def cheater_vs_simple():
     Let MCTSCheater play against SimpleBot.
     """
     # create gamestate for new round
-    game = GameState.new_round()
+    game = GameState.new_round(3)
     # deal cards and determine starting player
     game.start_round()
     print("------------------------------------------------------------------------------")
 
     # create MCTSCheater using 100 rollouts and temperatur=1.4.
     agent1 = MCTSCheater(100, temperature=1.4, simple=True, log_tree=False,
-                         max_depth=8, log_nlwt=False, show_turn=0)
+                         max_depth=8, log_nlwt=False, show_trick=-2,
+                         show_player=-1)
     # create 3 bots using simple heuristic to select moves.
     agent2 = SimpleBot()
     agent3 = SimpleBot()
     agent4 = SimpleBot()
     agents = [agent1, agent2, agent3, agent4]
+    game.print_state()
+    print()
+    # play until a winner is found or board is full.
     while not game.is_over():
-        # play until a winner is found or board is full.
-        game.print_state()
         play = agents[game.next_player].select_play(game)
-        if len(game.table) == 0:
-            print(f"   Trick:   {str(play)}")
+        if game.tricks < 0:
+            # Declaration phase
+            print(f"   {game.players[game.next_player].name}: {play}")
         else:
-            print(f"   Trick:   {game.show_table_cards()}  {str(play)}")
+            game.print_state()
+            # obenabe/undeufe indicator
+            ob = '\u2193' if game.higher_card_wins() else '\u2191'
+            if len(game.table) == 0:
+                print(f"{ob}  Trick:   {str(play)}")
+            else:
+                print(f"{ob}  Trick:   {game.show_table_cards()}  {str(play)}")
+
+        # apply selected play to game state
         game = game.apply_play(play)
         print("------------------------------------------------------------------------------")
 
     # calculate score
-    print("SCORE:")
-    print("------")
+    if game.obenabe:
+        print("OBENABE:")
+    else:
+        print("UNDEUFE:")
+    print("-------")
     score = game.count_points()
     for p in range(NOF_PLAYERS):
         player = game.players[p]
-        print(f"{player.name}: {score[p]}")
+        print(f"{player.name}: {score[p]:>3}")
+    print()
+    print(f"Team13:  {score[0] + score[2]:>3}")
+    print(f"Team24:  {score[1] + score[3]:>3}")
 
 
 if __name__ == '__main__':

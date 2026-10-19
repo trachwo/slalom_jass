@@ -410,6 +410,8 @@ class SimpleBot(Agent):
                     --- 4th player cannot win this trick:
                         => play cheapest non-bock.
 
+        TODO there seems to be a problem.
+
         Args:
             game_state (GameState):     current game state.
 
