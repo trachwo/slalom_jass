@@ -1,3 +1,4 @@
 {
-    "type": "simple"
+    "type": "simple",
+    "debug_player": -1
 }

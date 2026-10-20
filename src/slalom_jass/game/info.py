@@ -17,7 +17,7 @@ __all__ = [
     'GameInfo',
 ]
 
-# 'Jass' is played with 36 cards 
+# 'Jass' is played with 36 cards
 JASS_RANKS = [Rank.SIX, Rank.SEVEN, Rank.EIGHT, Rank.NINE, Rank.TEN, Rank.JACK,
               Rank.QUEEN, Rank.KING, Rank.ACE]
 
@@ -386,30 +386,13 @@ class GameInfo:
                         or None, None if no card left in suit.   
         """
         # get ranks of cards with specified suit which are still in the game
+        # NOTE: this works because the table itself was created in JASS_RANKS
+        #       order (6-A), but the value of Rank.ACE is 1!
         ranks = [r for r, p in self.c2p_map[suit.value].items() if len(p) > 0]
         if len(ranks) > 0:
             return Card(suit, Rank(ranks[0])), Card(suit, Rank(ranks[-1]))
-        else:
-            # no cards left in this suit
-            return None, None
-
-    def get_2nd_lowest_and_2nd_highest(self, suit):
-        """
-        Get 2nd highest and 2nd lowest card still in the game for a suit.
-
-        Args:
-            suit (Suit):    card suit.
-
-        Returns:
-            tuple:      2nd lowest card, 2nd highest card of specified suit.
-        """
-        # get list of cards with the specified suit which are still in the game
-        ranks = [r for r, p in self.c2p_map[suit.value].items() if len(p) > 0]
-        if len(ranks) > 1:
-            return Card(suit, Rank(ranks[1])), Card(suit, Rank(ranks[-2]))
-        else:
-            # 1 or less cards left in this suit
-            return None, None
+        # no cards left in this suit
+        return None, None
 
     def get_lower_or_higher(self, card, higher):
         """
@@ -420,19 +403,18 @@ class GameInfo:
 
         Args:
             card (Card):    reference card.
-            higher (boo):   True => higher cards, False => lower cards.
+            higher (bool):  True => higher cards, False => lower cards.
 
         Returns:
             list:   list of higher or lower cards.
         """
         # get suit of specified card
         suit = card.suit
-        # get ranks of cards with specified suit which are still in the game
-        ranks = [r for r, p in self.c2p_map[suit.value].items()
+        # get  cards with specified suit which are still in the game
+        cards = [Card(suit, Rank((r)))
+                 for r, p in self.c2p_map[suit.value].items()
                  if len(p) > 0]
         if higher:  # cards higher than the specified card
-            return [Card(suit, Rank(r)) for r in ranks
-                    if r > card.rank.value]
-        else:       # cards lower than the specified card
-            return [Card(suit, Rank(r)) for r in ranks
-                    if r < card.rank.value]
+            return [c for c in cards if c > card]
+        # cards lower than the specified card
+        return [c for c in cards if c < card]

@@ -5,19 +5,15 @@
             "hand": [
                 {
                     "suit": 1,
-                    "rank": 6
+                    "rank": 7
                 },
                 {
                     "suit": 1,
-                    "rank": 13
-                },
-                {
-                    "suit": 1,
-                    "rank": 1
+                    "rank": 9
                 },
                 {
                     "suit": 2,
-                    "rank": 8
+                    "rank": 7
                 },
                 {
                     "suit": 2,
@@ -25,19 +21,23 @@
                 },
                 {
                     "suit": 2,
-                    "rank": 12
-                },
-                {
-                    "suit": 3,
-                    "rank": 7
-                },
-                {
-                    "suit": 3,
                     "rank": 13
+                },
+                {
+                    "suit": 3,
+                    "rank": 6
+                },
+                {
+                    "suit": 3,
+                    "rank": 8
                 },
                 {
                     "suit": 4,
                     "rank": 10
+                },
+                {
+                    "suit": 4,
+                    "rank": 11
                 }
             ],
             "tricks": []
@@ -47,39 +47,39 @@
             "hand": [
                 {
                     "suit": 1,
-                    "rank": 9
+                    "rank": 10
+                },
+                {
+                    "suit": 1,
+                    "rank": 13
                 },
                 {
                     "suit": 2,
+                    "rank": 6
+                },
+                {
+                    "suit": 2,
+                    "rank": 8
+                },
+                {
+                    "suit": 3,
                     "rank": 7
                 },
                 {
-                    "suit": 2,
-                    "rank": 1
-                },
-                {
                     "suit": 3,
                     "rank": 9
                 },
                 {
                     "suit": 3,
-                    "rank": 11
+                    "rank": 13
                 },
                 {
                     "suit": 3,
                     "rank": 1
-                },
-                {
-                    "suit": 4,
-                    "rank": 6
                 },
                 {
                     "suit": 4,
                     "rank": 8
-                },
-                {
-                    "suit": 4,
-                    "rank": 13
                 }
             ],
             "tricks": []
@@ -89,27 +89,31 @@
             "hand": [
                 {
                     "suit": 1,
-                    "rank": 10
+                    "rank": 6
                 },
                 {
                     "suit": 1,
+                    "rank": 8
+                },
+                {
+                    "suit": 1,
+                    "rank": 11
+                },
+                {
+                    "suit": 2,
                     "rank": 12
                 },
                 {
                     "suit": 2,
-                    "rank": 6
-                },
-                {
-                    "suit": 2,
-                    "rank": 9
+                    "rank": 1
                 },
                 {
                     "suit": 3,
-                    "rank": 6
+                    "rank": 10
                 },
                 {
                     "suit": 3,
-                    "rank": 8
+                    "rank": 12
                 },
                 {
                     "suit": 4,
@@ -117,11 +121,7 @@
                 },
                 {
                     "suit": 4,
-                    "rank": 11
-                },
-                {
-                    "suit": 4,
-                    "rank": 12
+                    "rank": 1
                 }
             ],
             "tricks": []
@@ -131,31 +131,27 @@
             "hand": [
                 {
                     "suit": 1,
-                    "rank": 7
-                },
-                {
-                    "suit": 1,
-                    "rank": 8
-                },
-                {
-                    "suit": 1,
-                    "rank": 11
-                },
-                {
-                    "suit": 2,
-                    "rank": 11
-                },
-                {
-                    "suit": 2,
-                    "rank": 13
-                },
-                {
-                    "suit": 3,
-                    "rank": 10
-                },
-                {
-                    "suit": 3,
                     "rank": 12
+                },
+                {
+                    "suit": 1,
+                    "rank": 1
+                },
+                {
+                    "suit": 2,
+                    "rank": 9
+                },
+                {
+                    "suit": 2,
+                    "rank": 11
+                },
+                {
+                    "suit": 3,
+                    "rank": 11
+                },
+                {
+                    "suit": 4,
+                    "rank": 6
                 },
                 {
                     "suit": 4,
@@ -163,7 +159,11 @@
                 },
                 {
                     "suit": 4,
-                    "rank": 1
+                    "rank": 12
+                },
+                {
+                    "suit": 4,
+                    "rank": 13
                 }
             ],
             "tricks": []

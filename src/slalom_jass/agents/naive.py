@@ -9,6 +9,7 @@ from slalom_jass.agents.base import Agent
 from slalom_jass.cards import RANK_ORDER
 from slalom_jass.game import OBENABE_POINTS_ORDER, UNDEUFE_POINTS_ORDER,\
      NOF_PLAYERS, GameState, simulate_game, finish_game
+from slalom_jass.cards import Rank
 
 # list of symbols exported if a script calls 'from naive import *'
 __all__ = [
@@ -16,7 +17,7 @@ __all__ = [
     'SimpleBot',
 ]
 
-def get_least_valuable_card(legal_plays, next_bock_cards, obenabe):
+def get_least_valuable_card(legal_plays, next_bock_cards, obenabe, debug):
     """
     Get least valuable non-bock playable card.
 
@@ -25,6 +26,7 @@ def get_least_valuable_card(legal_plays, next_bock_cards, obenabe):
         next_bock_cards (list): cards which could be bock in future tricks.
         obenabe (bool):     True => obenabe round, False => undeufe round.
                             NOTE: points depend on mode of whole round!!!
+        debug (bool):       True => show debug info.
 
     Returns:
         Card:   least valuable card, if possible not a potential bock.
@@ -36,15 +38,21 @@ def get_least_valuable_card(legal_plays, next_bock_cards, obenabe):
         cards = sorted(legal_plays,
                        key=lambda x: UNDEUFE_POINTS_ORDER.index(x.rank))
 
+    if debug:
+        print(f"\n   cards: {'  '.join([str(c) for c in cards])}"
+              f"  next_bock: {'  '.join([str(c) for c in next_bock_cards])}\n")
+
     for card in cards:  # start with cheapest card
-        if card not in next_bock_cards:
-            # play least valuable card which is not bock in future tricks.
+        if (card not in next_bock_cards
+            and card.rank != Rank.EIGHT and card.rank != Rank.TEN):
+            # play least valuable card which is not bock in future tricks,
+            # and not '8' or '10' (high point cards).
             return card
     # play least valuable card although it could be bock in future tricks.
     return cards[0]
 
 
-def get_most_valuable_card(legal_plays, next_bock_cards, obenabe):
+def get_most_valuable_card(legal_plays, next_bock_cards, obenabe, debug):
     """
     Get least valuable non-bock playable card.
 
@@ -53,6 +61,7 @@ def get_most_valuable_card(legal_plays, next_bock_cards, obenabe):
         next_bock_cards (list): cards which could be bock in future tricks.
         obenabe (bool):     True => obenabe round, False => undeufe round.
                             NOTE: points depend on mode of whole round!!!
+        debug (bool):       True => show debug info.
 
     Returns:
         Card:   most valuable card, if possible not a potential bock.
@@ -63,6 +72,12 @@ def get_most_valuable_card(legal_plays, next_bock_cards, obenabe):
     else:
         cards = sorted(legal_plays,
                        key=lambda x: UNDEUFE_POINTS_ORDER.index(x.rank))
+
+#    print(f"### cards: {'  '.join(str(c) for c in cards)}")
+
+    if debug:
+        print(f"\n   cards: {'  '.join([str(c) for c in cards])}"
+              f"  next_bock: {'  '.join([str(c) for c in next_bock_cards])}\n")
 
     for card in reversed(cards):    # start with most valuable card
         if card not in next_bock_cards:
@@ -156,12 +171,20 @@ class SimpleBot(Agent):
 
     SimpleBot can be used instead of RandomBot for MCTS smart rollouts
     (=> slower but more realistic).
+
+    Attributes:
+        debug_player (int):     show debug info for this player.
+
     """
-    def __init__(self):
+    def __init__(self, debug_player=-1):
         """
         Initializer.
+
+        Args:
+            debug_player (int):     show debug info for this player.
         """
         Agent.__init__(self)        # base class initializer.
+        self.debug_player = debug_player
 
     def save(self, filename):
         """
@@ -171,7 +194,8 @@ class SimpleBot(Agent):
             filename (str):     filename.
         """
         data = {
-            "type": "simple"
+            "type": "simple",
+            "debug_player": self.debug_player
         }
         # write data to json-file.
         if not filename.endswith('.json'):
@@ -199,6 +223,9 @@ class SimpleBot(Agent):
         Returns:
             card (Card):                card 1st player wants to play.
         """
+        # show debug info?
+        debug = game_state.next_player == self.debug_player
+
         # get playable cards
         cards = game_state.get_legal_plays()
 
@@ -222,12 +249,14 @@ class SimpleBot(Agent):
             next_bock_cards = highest
 
         if bock_cards:
+            if debug:
+                print(f"\n   bock: {'  '.join([str(c) for c in bock_cards])}\n")
             # play random bock card.
             return random.choice(bock_cards)
 
         # no bock
         # => play cheapest card (if possible) not bock in next trick.
-        return get_least_valuable_card(cards, next_bock_cards, obenabe)
+        return get_least_valuable_card(cards, next_bock_cards, obenabe, debug)
 
     def select_turn_2_card(self, game_state):
         """
@@ -250,6 +279,9 @@ class SimpleBot(Agent):
         Returns:
             card (Card):                card 2nd player wants to play.
         """
+        # show debug info?
+        debug = game_state.next_player == self.debug_player
+
         # get playable cards
         cards = game_state.get_legal_plays()
 
@@ -265,24 +297,29 @@ class SimpleBot(Agent):
 
         # check if we are following suit.
         if cards[0].suit == game_state.table[0].suit:
-            # check if we have the bock-card
+            # check if we have the bock-card (without table[0])
             if obenabe:     # OBENABE trick
                 # playable card which is bock this trick
-                bock_cards = [c for c in cards if c in highest]
+                bock_cards = [c for c in cards
+                              if c in highest and c > game_state.table[0]]
             else:           # UNDEUFE trick
                 # playable card which is bock this trick
-                bock_cards = [c for c in cards if c in lowest]
+                bock_cards = [c for c in cards
+                              if c in lowest and c < game_state.table[0]]
             if bock_cards:
+                if debug:
+                    print(f"\n   bock: {'  '.join([str(c) for c in bock_cards])}\n")
                 # play bock card (can only be 1 in the led suit)
                 return bock_cards[0]
 
             # no bock
             # => play cheapest card not bock in a future trick (if possible).
-            return get_least_valuable_card(cards, lowest + highest, obenabe)
+            return get_least_valuable_card(cards, lowest + highest, obenabe,
+                                           debug)
 
         # not following suit
         # => play cheapest card not bock in a future trick (if possible).
-        return get_least_valuable_card(cards, lowest + highest, obenabe)
+        return get_least_valuable_card(cards, lowest + highest, obenabe, debug)
 
     def select_turn_3_card(self, game_state):
         """
@@ -322,6 +359,9 @@ class SimpleBot(Agent):
         Returns:
             Card:       card played by 3rd player.
         """
+        # show debug info?
+        debug = game_state.next_player == self.debug_player
+
         # get playable cards
         cards = game_state.get_legal_plays()
 
@@ -345,42 +385,53 @@ class SimpleBot(Agent):
         # get list of cards which could beat partners card
         better_cards = game_state.info.get_lower_or_higher(table[0], obenabe)
 
+        if debug:
+            print(f"\n   better: {'  '.join([str(c) for c in better_cards])}"
+                  f"  bock: {'  '.join([str(c) for c in bock_cards])}\n")
+
         # check if we are following suit.
         if cards[0].suit == table[0].suit:
             if winner == 0:
                 # our partner has won the trick so far
-                if not better_cards: 
+                if not better_cards:
                     # partner has played bock
                     # => play most valuable card which is not a future bock
                     return get_most_valuable_card(cards, lowest + highest,
-                                                  obenabe)
+                                                  obenabe, debug)
                 # our partner didn't play bock
                 if (len([c for c in cards if c in better_cards])
                     == len(better_cards)):
                     # all better cards are in our hand
                     # => play most valuable card which is not a future bock
                     return get_most_valuable_card(cards, lowest + highest,
-                                                  obenabe)
+                                                  obenabe, debug)
                 # the 4th player (opponent) could have one of the better cards
                 my_bock = [c for c in cards if c in bock_cards]
                 if my_bock:
-                    # we have the bock in the led suit 
+                    if debug:
+                        print(f"\n   bock: {my_bock[0]}\n")
+                    # we have the bock in the led suit
                     return my_bock[0]
                 # the 4th player could have the bock in the led suit
                 # => play the cheapest card which is not a future bock
                 return get_least_valuable_card(cards, lowest + highest,
-                                               obenabe)
+                                               obenabe, debug)
             # the 2nd player (opponent) has won the trick so far
             my_bock = [c for c in cards if c in bock_cards]
             # if we have the bock card, we play it
             if my_bock and obenabe and my_bock[0] > table[1]:
+                if debug:
+                    print(f"\n   bock: {my_bock[0]}\n")
                 return my_bock[0]
             if my_bock and not obenabe and my_bock[0] < table[1]:
+                if debug:
+                    print(f"\n   bock: {my_bock[0]}\n")
                 return my_bock[0]
 
             # we don't have the bock card
             # => play the cheapest card which is not a future bock
-            return get_least_valuable_card(cards, lowest + highest, obenabe)
+            return get_least_valuable_card(cards, lowest + highest, obenabe,
+                                           debug)
 
         # we cannot follow suit
         if winner == 0:
@@ -388,12 +439,13 @@ class SimpleBot(Agent):
             if not better_cards: 
                 # partner has played bock
                 # => play most valuable card which is not a future bock
-                return get_most_valuable_card(cards, lowest + highest, obenabe)
+                return get_most_valuable_card(cards, lowest + highest, obenabe,
+                                              debug)
 
         # the 2nd player has already won the trick or the 4th player could have
         # the bock card
         # => play the cheapest card which is not a future bock
-        return get_least_valuable_card(cards, lowest + highest, obenabe)
+        return get_least_valuable_card(cards, lowest + highest, obenabe, debug)
 
     def select_turn_4_card(self, game_state):
         """
@@ -418,6 +470,9 @@ class SimpleBot(Agent):
         Returns:
             Card:       card played by 4th player.
         """
+        # show debug info?
+        debug = game_state.next_player == self.debug_player
+
         # get playable cards sorted by rank lowest to highest
         cards = sorted(game_state.get_legal_plays(),
                        key=lambda x: RANK_ORDER.index(x.rank))
@@ -438,10 +493,11 @@ class SimpleBot(Agent):
         # get lowest and highest cards still in the game pers suit
         lowest, highest = game_state.get_bock_cards()
 
-        if winner == 2:
+        if winner == 1:
             # our partner has already won this trick
             # => play most valuable card which is not a future bock
-            return get_most_valuable_card(cards, lowest + highest, obenabe)
+            return get_most_valuable_card(cards, lowest + highest, obenabe,
+                                          debug)
 
         # opponents have one this trick so far.
         if cards[0].suit == table[0].suit:
@@ -459,7 +515,7 @@ class SimpleBot(Agent):
 
         # cannot win the trick or cannot follow suit
         # => play cheapest card which is not a future bock
-        return get_least_valuable_card(cards, lowest + highest, obenabe)
+        return get_least_valuable_card(cards, lowest + highest, obenabe, debug)
 
     def select_declaration(self, game_state):
         """

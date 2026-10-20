@@ -1065,12 +1065,32 @@ def info_test():
     print(f"obenabe bock-cards:  {'  '.join([str(c) for c in highest])}") 
     print()
 
+    # find cards still in the game which are lower than 6♣
+    lower = game.info.get_lower_or_higher(Card(Suit.CLUBS, Rank.SIX), False)
+    print(f"lower than 6♣ :  {'  '.join([str(c) for c in lower])}") 
+    # find cards still in the game which are higher than 6♣
+    higher = game.info.get_lower_or_higher(Card(Suit.CLUBS, Rank.SIX), True)
+    print(f"higher than 6♣ :  {'  '.join([str(c) for c in higher])}") 
+    print()
+
     # find cards still in the game which are lower than 9♣
     lower = game.info.get_lower_or_higher(Card(Suit.CLUBS, Rank.NINE), False)
     print(f"lower than 9♣ :  {'  '.join([str(c) for c in lower])}") 
     # find cards still in the game which are higher than 9♣
     higher = game.info.get_lower_or_higher(Card(Suit.CLUBS, Rank.NINE), True)
     print(f"higher than 9♣ :  {'  '.join([str(c) for c in higher])}") 
+    print()
+
+
+    # !!! Special Case Ace !!!
+    # no higher cards, all other cards are lower,
+    # but Ace has the lowest rank value (= 1).
+    # find cards still in the game which are lower than A♢
+    lower = game.info.get_lower_or_higher(Card(Suit.DIAMONDS, Rank.ACE), False)
+    print(f"lower than A♢ :  {'  '.join([str(c) for c in lower])}")
+    # find cards still in the game which are higher than A♢
+    higher = game.info.get_lower_or_higher(Card(Suit.DIAMONDS, Rank.ACE), True)
+    print(f"higher than A♢ :  {'  '.join([str(c) for c in higher])}")
     print()
 
     # redistribute cards
