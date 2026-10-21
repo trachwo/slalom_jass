@@ -226,6 +226,15 @@ class Deck:
         """
         return self.cards.pop(-1)
 
+    def remove_card(self, card):
+        """
+        Remove specified card from the deck. 
+
+        Args:
+            card (Card):    card to be removed from deck.
+        """
+        self.cards.remove(card)
+
     def serialize(self):
         """
         Convert Deck object to list of serialized cards.
