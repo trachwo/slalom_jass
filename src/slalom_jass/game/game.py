@@ -246,10 +246,12 @@ class GameState:
         return GameState(players, tricks, turns, table, next_player, obenabe,
                          info)
 
-    def start_round(self):
+    def start_round(self, scenario=None):
         """
         Deal cards and move to declaration phase.
 
+        Args:
+            scenario (Scenario): card distribution loaded from scenario file.
         """
         # game must be in initial state: tricks = -1, turns = 0
         if self.tricks != -1:
@@ -257,9 +259,18 @@ class GameState:
         if self.turns != 0:
             raise ValueError(f"Cannot start round in turn {self.turns}")
 
-        # dealer (next player) shuffles deck of 36 cards and deals 9 cards to
-        # each player.
-        self.deal_cards()
+        if scenario is None:
+            # dealer (next player) shuffles deck of 36 cards and deals 9 cards
+            # to each player.
+            self.deal_cards()
+        else:
+            # use card distribution specified in scenario.
+            # => randomly distribute unspecified cards.
+            scenario.distribute()
+            # set player hands according to scenario
+            for i, player in enumerate(self.players):
+                player.hand = scenario.hands[f'P{i+1}']
+
         self.next_player = (self.next_player + 1) % NOF_PLAYERS
         self.turns = 1      # next game state: tricks = -1, turns = 1
 
@@ -816,17 +827,19 @@ class GameState:
         self.deserialize(data)
 
 
-def simulate_game(agent1, agent2, agent3, agent4, dealer=3, verbose=False):
+def simulate_game(agent1, agent2, agent3, agent4, dealer=3, scenario=None,
+                  verbose=False):
     """
     Let 4 agents play a single round of Slalom-Jass against each other.
 
     Args:
-        agent1 (Agent):     bot playing Player1.
-        agent2 (Agent):     bot playing Player2.
-        agent3 (Agent):     bot playing Player3.
-        agent4 (Agent):     bot playing Player4.
-        dealer (int):       this round's dealer.
-        verbose (bool):     True => show details.
+        agent1 (Agent):         bot playing Player1.
+        agent2 (Agent):         bot playing Player2.
+        agent3 (Agent):         bot playing Player3.
+        agent4 (Agent):         bot playing Player4.
+        dealer (int):           this round's dealer.
+        scenario (Scenario):    scenario loaded from CSV-file.
+        verbose (bool):         True => show details.
 
     Returns:
         tuple:     points per agent.
@@ -838,7 +851,7 @@ def simulate_game(agent1, agent2, agent3, agent4, dealer=3, verbose=False):
     # with Player4 as dealer Player1 has to declare first.
     game = GameState.new_round(dealer)
     # deal cards and determine starting player
-    game.start_round()
+    game.start_round(scenario)
     if verbose:
         # print cards per player
         game.print_state()

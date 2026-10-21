@@ -1,6 +1,6 @@
 {
     "type": "ismcts",
-    "num_rounds": 100,
+    "num_rounds": 200,
     "temperature": 0.7,
     "simple": false,
     "log_tree": false,

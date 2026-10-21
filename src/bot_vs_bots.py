@@ -8,6 +8,7 @@ import json
 from slalom_jass.agents import HumanAgent, RandomBot, SimpleBot, MCTSCheater,\
      ISMCTSAgent
 from slalom_jass.game import simulate_game
+from slalom_jass.game.scenario import Scenario
 
 
 # absolute path to files used in this program
@@ -81,6 +82,8 @@ def main():
     parser.add_argument('--first', '-f', default=1, type=int,
                         choices={1, 2, 3, 4},
                         help="Set starting player (1-4).")
+    parser.add_argument('--scenario', '-s',
+                        help="load scenario file.")
     args = parser.parse_args()
 
     # create agents.
@@ -93,6 +96,18 @@ def main():
     # e.g. Player1 (game.players[0]) shall play first
     #      => Player4 (game.players[3]) must be the dealer.
     dealer = (args.first + 2) % 4
+
+    # add extension '.cs' to scenario-name
+    scenario_file = args.scenario + '.cs'
+
+    # load scenario from CSV-file
+    # get absolute path to agent 
+    scenario_path = str(BASE_PATH / 'data' / 'scenarios' / scenario_file)
+
+    # create scenario
+    scenario = Scenario(scenario_path)
+    # load scenario from CSV-file
+    scenario.load()
 
     # reset total points
     total = [0 for _ in range(4)]
@@ -107,7 +122,7 @@ def main():
             print("\n----------------------------------------------------------"
                   "------------------------------------------")
         # simulate 1 game
-        points = simulate_game(agent1, agent2, agent3, agent4, dealer,
+        points = simulate_game(agent1, agent2, agent3, agent4, dealer, scenario,
                                args.verbose)
         if args.verbose:
             print("------------------------------------------------------------"
