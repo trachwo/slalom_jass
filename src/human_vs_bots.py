@@ -1,10 +1,11 @@
 """
-Let 1 human play a round of Slalom-Jass against 3 bots of same type.
+Let 1 human play a round of Slalom-Jass with 3 bots of same type.
 """
 from pathlib import Path
 import argparse
 import json
-from slalom_jass.agents import HumanAgent, RandomBot
+from slalom_jass.agents import HumanAgent, RandomBot, SimpleBot, MCTSCheater,\
+    ISMCTSAgent
 from slalom_jass.game import GameState
 
 
@@ -35,24 +36,26 @@ def load_agent(filename):
         agent = HumanAgent()
     elif data['type'] == 'random':
         agent = RandomBot()
-#    elif data['type'] == 'simple':
-#        agent = SimpleBot()
-#    elif data['type'] == 'mcts_cheater':
-#        agent = MCTSCheater(data['num_rounds'],
-#                          data['temperature'],
-#                          data['simple'],
-#                          data['log_tree'],
-#                          data['max_depth'],
-#                          data['log_nlwt'],
-#                          data['show_turn'])
-#    elif data['type'] == 'ismcts':
-#        agent = ISMCTSAgent(data['num_rounds'],
-#                          data['temperature'],
-#                          data['simple'],
-#                          data['log_tree'],
-#                          data['max_depth'],
-#                          data['log_nlwt'],
-#                          data['show_turn'])
+    elif data['type'] == 'simple':
+        agent = SimpleBot(data['debug_player'])
+    elif data['type'] == 'cheater':
+        agent = MCTSCheater(data['num_rounds'],
+                          data['temperature'],
+                          data['simple'],
+                          data['log_tree'],
+                          data['max_depth'],
+                          data['log_nlwt'],
+                          data['show_trick'],
+                          data['show_player'])
+    elif data['type'] == 'ismcts':
+        agent = ISMCTSAgent(data['num_rounds'],
+                          data['temperature'],
+                          data['simple'],
+                          data['log_tree'],
+                          data['max_depth'],
+                          data['log_nlwt'],
+                          data['show_trick'],
+                          data['show_player'])
     else:
         raise ValueError(f"No such agent type '{data['type']}'")
 
@@ -133,6 +136,11 @@ def simulate_game(agent1, agent2, agent3, agent4, dealer=3):
             print("  + 5")   # for last trick
         else:
             print()
+
+    print(f"\n   Player1 + Player3: {points[0] + points[2]:>3}")
+
+    print(f"   Player2 + Player4: {points[1] + points[3]:>3}")
+
     print("==============================================================================")
 
     # return tuple of points
