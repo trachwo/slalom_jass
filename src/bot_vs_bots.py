@@ -82,7 +82,7 @@ def main():
     parser.add_argument('--first', '-f', default=1, type=int,
                         choices={1, 2, 3, 4},
                         help="Set starting player (1-4).")
-    parser.add_argument('--scenario', '-s',
+    parser.add_argument('--scenario', '-s', default=None,
                         help="load scenario file.")
     args = parser.parse_args()
 
@@ -97,17 +97,20 @@ def main():
     #      => Player4 (game.players[3]) must be the dealer.
     dealer = (args.first + 2) % 4
 
-    # add extension '.cs' to scenario-name
-    scenario_file = args.scenario + '.cs'
+    if args.scenario is not None:
+        # add extension '.cs' to scenario-name
+        scenario_file = args.scenario + '.cs'
 
-    # load scenario from CSV-file
-    # get absolute path to agent 
-    scenario_path = str(BASE_PATH / 'data' / 'scenarios' / scenario_file)
+        # load scenario from CSV-file
+        # get absolute path to agent 
+        scenario_path = str(BASE_PATH / 'data' / 'scenarios' / scenario_file)
 
-    # create scenario
-    scenario = Scenario(scenario_path)
-    # load scenario from CSV-file
-    scenario.load()
+        # create scenario
+        scenario = Scenario(scenario_path)
+        # load scenario from CSV-file
+        scenario.load()
+    else:
+        scenario = None
 
     # reset total points
     total = [0 for _ in range(4)]

@@ -7,6 +7,7 @@ import json
 from slalom_jass.agents import HumanAgent, RandomBot, SimpleBot, MCTSCheater,\
     ISMCTSAgent
 from slalom_jass.game import GameState
+from slalom_jass.game.scenario import Scenario
 
 
 # absolute path to files used in this program
@@ -62,7 +63,7 @@ def load_agent(filename):
     return agent
 
 
-def simulate_game(agent1, agent2, agent3, agent4, dealer=3):
+def simulate_game(agent1, agent2, agent3, agent4, dealer=3, scenario=None):
     """
     Let 4 agents play a single round of Slalom-Jass against each other.
 
@@ -82,7 +83,7 @@ def simulate_game(agent1, agent2, agent3, agent4, dealer=3):
     # create gamestate for new round (with Player1 as dealer)
     game = GameState.new_round(dealer)
     # deal cards and determine starting player
-    game.start_round()
+    game.start_round(scenario)
 
     # Game starts with declaration phase
     print("\n----------------------------------------------------------"
@@ -158,6 +159,8 @@ def main():
     parser.add_argument('--first', '-f', default=1, type=int,
                         choices={1, 2, 3, 4},
                         help="Set starting player (1-4).")
+    parser.add_argument('--scenario', '-s', default=None,
+                        help="load scenario file.")
     args = parser.parse_args()
 
     # create agents.
@@ -171,8 +174,23 @@ def main():
     #      => Player4 (game.players[3]) must be the dealer.
     dealer = (args.first + 2) % 4
 
+    if args.scenario is not None:
+        # add extension '.cs' to scenario-name
+        scenario_file = args.scenario + '.cs'
+
+        # load scenario from CSV-file
+        # get absolute path to agent 
+        scenario_path = str(BASE_PATH / 'data' / 'scenarios' / scenario_file)
+
+        # create scenario
+        scenario = Scenario(scenario_path)
+        # load scenario from CSV-file
+        scenario.load()
+    else:
+        scenario = None
+
     # play 1 game
-    simulate_game(agent1, agent2, agent3, agent4, dealer)
+    simulate_game(agent1, agent2, agent3, agent4, dealer, scenario)
 
 
 if __name__ == '__main__':

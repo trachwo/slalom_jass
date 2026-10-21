@@ -564,8 +564,8 @@ def cheater_vs_simple():
     print("------------------------------------------------------------------------------")
 
     # create MCTSCheater using 100 rollouts and temperatur=0.7.
-    agent1 = MCTSCheater(100, temperature=1.4, simple=True, log_tree=False,
-                         max_depth=8, log_nlwt=False, show_trick=-2,
+    agent1 = MCTSCheater(100, temperature=0.7, simple=False, log_tree=False,
+                         max_depth=3, log_nlwt=False, show_trick=-2,
                          show_player=-1)
     # create 3 bots using simple heuristic to select moves.
     agent2 = SimpleBot()
@@ -574,8 +574,9 @@ def cheater_vs_simple():
     agents = [agent1, agent2, agent3, agent4]
     game.print_state()
     print()
-    # play until a winner is found or board is full.
+
     while not game.is_over():
+        # play until all cards have been played
         play = agents[game.next_player].select_play(game)
         if game.tricks < 0:
             # Declaration phase
@@ -610,6 +611,7 @@ def cheater_vs_simple():
 
 if __name__ == '__main__':
     # !!!NOTE!!!
-    # To avoid ModuleNotFoundError start it from '~/Projects/hearts/src' with
-    # python3 -m dl_hearts.agents.mcts_cheater
+    # To avoid ModuleNotFoundError start it from '~/Projects/slalom_jass/src'
+    # with:
+    # python3 -m slalom_jass.agents.mcts_cheater
     cheater_vs_simple()
