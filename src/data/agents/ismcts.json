@@ -1,11 +1,11 @@
 {
-    "type": "mcts_cheater",
+    "type": "ismcts",
     "num_rounds": 100,
     "temperature": 0.7,
     "simple": false,
     "log_tree": false,
     "max_depth": 3,
-    "log_nlwt": true,
+    "log_nlwt": false,
     "show_trick": -2,
     "show_player": 0 
 }

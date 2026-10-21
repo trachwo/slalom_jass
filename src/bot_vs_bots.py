@@ -5,7 +5,8 @@ from pathlib import Path
 import argparse
 import time
 import json
-from slalom_jass.agents import HumanAgent, RandomBot, SimpleBot, MCTSCheater
+from slalom_jass.agents import HumanAgent, RandomBot, SimpleBot, MCTSCheater,\
+     ISMCTSAgent
 from slalom_jass.game import simulate_game
 
 
@@ -38,7 +39,7 @@ def load_agent(filename):
         agent = RandomBot()
     elif data['type'] == 'simple':
         agent = SimpleBot(data['debug_player'])
-    elif data['type'] == 'mcts_cheater':
+    elif data['type'] == 'cheater':
         agent = MCTSCheater(data['num_rounds'],
                           data['temperature'],
                           data['simple'],
@@ -47,14 +48,15 @@ def load_agent(filename):
                           data['log_nlwt'],
                           data['show_trick'],
                           data['show_player'])
-#    elif data['type'] == 'ismcts':
-#        agent = ISMCTSAgent(data['num_rounds'],
-#                          data['temperature'],
-#                          data['simple'],
-#                          data['log_tree'],
-#                          data['max_depth'],
-#                          data['log_nlwt'],
-#                          data['show_turn'])
+    elif data['type'] == 'ismcts':
+        agent = ISMCTSAgent(data['num_rounds'],
+                          data['temperature'],
+                          data['simple'],
+                          data['log_tree'],
+                          data['max_depth'],
+                          data['log_nlwt'],
+                          data['show_trick'],
+                          data['show_player'])
     else:
         raise ValueError(f"No such agent type '{data['type']}'")
 

@@ -47,6 +47,7 @@ def get_least_valuable_card(legal_plays, next_bock_cards, obenabe, debug):
             and card.rank != Rank.EIGHT and card.rank != Rank.TEN):
             # play least valuable card which is not bock in future tricks,
             # and not '8' or '10' (high point cards).
+#        if card not in next_bock_cards:
             return card
     # play least valuable card although it could be bock in future tricks.
     return cards[0]

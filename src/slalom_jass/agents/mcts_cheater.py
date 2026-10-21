@@ -126,12 +126,12 @@ class MCTSNode():
 
     Attributes:
         parent (MCTSNode):      parent node that led to this node.
-        move (Move):            last move that directly led to this node.
+        play (str or Card):     last play that directly led to this node.
         wins (int):             win counter for active player in parent node.
         visits (int):           total number of times this node was visited.
         children (list):        children nodes which have this node as parent.
         active_player (int):    next player to play in this node's game state.
-        untried_moves (list):   legal moves not tried from this node.
+        untried_plays (list):   legal plays not tried from this node.
     """
     def __init__(self, state, parent=None, play=None):
         """
@@ -179,7 +179,7 @@ class MCTSNode():
             Calculate the Upper Confidence Bound (UCB1) for one child.
 
             Then searching a path through the tree, we have to decide at each
-            node, which of its child nodes (legal moves) to select next.  We
+            node, which of its child nodes (legal plays) to select next.  We
             select the child node with the highest 'Upper Confidence Bound for
             Trees' (UCT) score which is the sum of an exploitation- and
             exploration-part.
@@ -220,7 +220,8 @@ class MCTSNode():
         Creates a child node and removes the play from untried list.
 
         Args:
-            play (Card):    move applied to current state get to the next state.
+            play (str or Card):     play applied to current state, to get to
+                                    the next state.
             next_state (GameState):     corresponding state in child node.
 
         Returns:
@@ -246,7 +247,7 @@ class MCTSNode():
         have to increment its visits counter.
         As result of the simulation we get the card points for each player,
         which we've converted to a score of 0.0 to 1.0 per team (e.g. a team
-        has not gotten all 157 card points, both players get a score of 1.0).
+        has gotten all 157 card points, both players get a score of 1.0).
         If this node is not the root node (i.e. if this node has a parent),
         add the reward received by the active player in the parent node (i.e.
         the player who selected the play which led to this node) in the
@@ -291,7 +292,7 @@ class MCTSNode():
         Show details for EXPAND phase in this node.
 
         Args:
-            play (Card):    play selected from untried plays.
+            play (str or Card): play selected from untried plays.
         """
         print(f"P{self.active_player + 1}:"
               f" {'  '.join([str(p) for p in self.untried_plays])} ")
@@ -341,8 +342,8 @@ class MCTSCheater(Agent):
             log_tree(bool):         True => show tree.
             max_depth (int):        show tree max depth
             log_nlwt (bool)         True => nodes, levels, wins, time.
-            show_trick(int):        show rollout details for this trick.
-            show_player(int):       show details for this player.
+            show_trick (int):       show rollout details for this trick.
+            show_player (int):      show details for this player.
         """
         Agent.__init__(self)        # base class initializer.
         self.num_rounds = num_rounds
@@ -392,7 +393,7 @@ class MCTSCheater(Agent):
     @staticmethod
     def simulate_random_game(game, simple=False):
         """
-        Simulate game with random or simple bots selecting legal moves.
+        Simulate game with random or simple bots selecting legal plays.
 
         Args:
             game (GameState):   game state from which the simulation starts.
@@ -416,7 +417,7 @@ class MCTSCheater(Agent):
 
     def select_play(self, game_state):
         """
-        Select legal card play with Monte Carlo Tree Search (MCTS).
+        Select legal play with Monte Carlo Tree Search (MCTS).
 
         The Cheater-agent treats 'Slalom-Jass' as a deterministic game, i.e. it
         not only knows its own hand cards, but also (illegally) looks at the
@@ -446,10 +447,13 @@ class MCTSCheater(Agent):
 
         # loop through the specified number of rollouts.
         for i in range(self.num_rounds):
+            # print more debug info for specified trick and player
             if (game_state.tricks == self.show_trick
                 and game_state.next_player == self.show_player):
                 print(f"\nROLLOUT {i + 1}")
-            node = root_node     # start each search at the root node
+
+            # start each search at the root node
+            node = root_node
 
             # make a clone of the root state, this state will be changed during this
             # rollout (until a terminal state is reached), while the original root
@@ -457,15 +461,17 @@ class MCTSCheater(Agent):
             state = game_state.clone()
 
             # 1. SELECT: Move down the tree using UCT until we hit a node with
-            #            untried moves.
+            #            untried plays.
             while not node.untried_plays and node.children:
                 # list of untried moves is empty and node has children
                 # => use UCT to select child node with highest UCB1
                 node = node.select_child_uct(self.temperature)
+
+                # show debug info for specified trick and player
                 if (game_state.tricks == self.show_trick
                     and game_state.next_player == self.show_player):
                     node.show_select(self.temperature)
-                # apply action which leads to child to the current state
+                # apply play which leads to child to the current state
                 # => clone of original game enters corresponding (child) state.
                 state = state.apply_play(node.play)
 
@@ -475,10 +481,12 @@ class MCTSCheater(Agent):
             if node.untried_plays:
                 # randomly select 1 of the available plays
                 play = random.choice(node.untried_plays)
+
+                # show debug info for specified trick and player               
                 if (game_state.tricks == self.show_trick
                     and game_state.next_player == self.show_player):
                     node.show_expand(play)
-                # apply this move to the state of the cloned game
+                # apply this play to the state of the cloned game
                 state = state.apply_play(play)
                 # create a new child node corresponding to the new state of the
                 # cloned game and remove the applied play from the untried
@@ -495,7 +503,7 @@ class MCTSCheater(Agent):
                 results = [f"P{p + 1}:{points[p]}" for p in range(4)]
                 print(f"SIMULATE: {' '.join(results)}")
 
-            # convert penalty points into score from 0.0 to 1.0 per team.
+            # convert card points into score from 0.0 to 1.0 per team.
             score = points_to_score(points)
 
             # 4. BACKPROPAGATE: bubble the score up the tree through all
@@ -528,7 +536,7 @@ class MCTSCheater(Agent):
         duration = time.time() - start_time
 
         # print number of nodes, number of levels,
-        # and win percentage of selected move.
+        # and win percentage of selected move for specified player.
         if self.log_nlwt and game_state.next_player == self.show_player:
             print(f"\n   nodes:{nof_nodes} levels:{max_levels - 1} "
                   f"wins:{100 * best_win_ratio:2.1f}% "
@@ -539,6 +547,15 @@ class MCTSCheater(Agent):
 def cheater_vs_simple():
     """
     Let MCTSCheater play against SimpleBot.
+
+    NOTE: When looking at rollout details,
+
+                !!! DO NOT FORGET TO LOOK AT THE WHOLE PATH !!!
+
+          i.e. if P1 has selected Q♣ as 1st card and we expand 3♣ from P2, it's
+          correct, that if in the next rollout P1 selects 6♣, P2 still could
+          have 3♣ as unexpanded play, because this is another node reached over
+          6♣ instead of Q♣.
     """
     # create gamestate for new round
     game = GameState.new_round(3)
@@ -546,7 +563,7 @@ def cheater_vs_simple():
     game.start_round()
     print("------------------------------------------------------------------------------")
 
-    # create MCTSCheater using 100 rollouts and temperatur=1.4.
+    # create MCTSCheater using 100 rollouts and temperatur=0.7.
     agent1 = MCTSCheater(100, temperature=1.4, simple=True, log_tree=False,
                          max_depth=8, log_nlwt=False, show_trick=-2,
                          show_player=-1)
