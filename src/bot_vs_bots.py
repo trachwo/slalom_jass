@@ -115,10 +115,16 @@ def main():
     # reset total points
     total = [0 for _ in range(4)]
 
-    print()
+    if not args.verbose:
+        # print statistics header
+        print()
+        print("          |     |     |     |     |    Average    |")
+        print("    Games |  P1 |  P2 |  P3 |  P4 | P1+P3 | P2+P4 | Time")
+        print("----------+-----+-----+-----+-----+-------+-------+-------")
+
     for i in range(args.num_games):
         start_time = time.time()
-        print(f"{str(i + 1) + '/' + str(args.num_games):>9}: ",
+        print(f"{str(i + 1) + '/' + str(args.num_games):>9} ",
                end='')
         if args.verbose:
             # show details
@@ -137,10 +143,9 @@ def main():
             print("------------------------------------------------------------"
                   "----------------------------------------")
         else:
-            print(f"P1:{points[0]:>3}   P2:{points[1]:>3}   P3:{points[2]:>3}"
-                  f"   P4:{points[3]:>3}   P1+P3: {total[0] + total[2]:>5}"
-                  f" {avg_13:>3}   P2+P4: {total[1] + total[3]:>5} {avg_24:>3}"
-                  f"   Time: {time.time() - start_time:.1f}s")
+            print(f"| {points[0]:>3} | {points[1]:>3} | {points[2]:>3} |"
+                  f" {points[3]:>3} | {avg_13:>4}  | {avg_24:>4}  |"
+                  f" {time.time() - start_time:.1f}s")
 
         # next dealer
         dealer = (dealer + 1) % 4
