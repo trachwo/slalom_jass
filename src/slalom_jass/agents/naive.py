@@ -175,17 +175,21 @@ class SimpleBot(Agent):
 
     Attributes:
         debug_player (int):     show debug info for this player.
+        nof_eval_games (int):   number of evaluation games to find declaration.
 
     """
-    def __init__(self, debug_player=-1):
+    def __init__(self, debug_player=-1, nof_eval_games=0):
         """
         Initializer.
 
         Args:
             debug_player (int):     show debug info for this player.
+            nof_eval_games (int):   number of evaluation games to find
+                                    declaration (0 => random pick).
         """
         Agent.__init__(self)        # base class initializer.
         self.debug_player = debug_player
+        self.nof_eval_games = nof_eval_games
 
     def save(self, filename):
         """
@@ -524,7 +528,12 @@ class SimpleBot(Agent):
 
         We let the next player play multiple games with declaration 'Obenabe'
         and 'Undeufe' calculating the average score for both types of game.
-        We 
+        If declare the one with the larger average if the average is larger
+        than 100 points, otherwise declare 'Schiebe'. If 'Schiebe' is no
+        option, declare the one with the larger average.
+        If 'nof_eval_games' was set to 0, we randomly pick one of the available
+        options (e.g. fast declaration if SimpleBot is used for MCTS
+        simulations).
 
         Args:
             game_state (GameState):     current game state.
@@ -538,14 +547,17 @@ class SimpleBot(Agent):
         # get legal declarations
         declarations = game_state.get_legal_plays()
 
+        if self.nof_eval_games == 0:
+            # random pick
+            return random.choice(declarations)
+
         # get next player
         player = game_state.next_player
         # get partner of next player
         partner = (player + 2) % NOF_PLAYERS
-        nof_eval_games = 100
         obenabe_points = 0   # total team points for obenabe games
         undeufe_points = 0   # total team points for undeufe games
-        for _ in range(nof_eval_games):
+        for _ in range(self.nof_eval_games):
             # play a number of obenabe games
             game = game_state.clone_and_randomize()
             game = game.apply_play('Obenabe')
@@ -564,15 +576,17 @@ class SimpleBot(Agent):
 #        print(f"Average Obenabe points: {obenabe_points / nof_eval_games:.1f}")
 #        print(f"Average Undeufe points: {undeufe_points / nof_eval_games:.1f}")
 
-        if obenabe_points >= undeufe_points and obenabe_points / nof_eval_games > 100:
+        if (obenabe_points >= undeufe_points
+            and (obenabe_points / self.nof_eval_games) > 100):
             return 'Obenabe'
-        if undeufe_points >= obenabe_points and undeufe_points / nof_eval_games > 100:
+        if (undeufe_points >= obenabe_points
+            and (undeufe_points / self.nof_eval_games) > 100):
             return 'Undeufe'
         if 'Schiebe' in declarations:
             return 'Schiebe'
         if obenabe_points >= undeufe_points:
             return 'Obenabe'
-        return 'Undeufe'  
+        return 'Undeufe'
 
     def select_play(self, game_state):
         """
@@ -605,5 +619,8 @@ class SimpleBot(Agent):
 
 
 if __name__ == '__main__':
-#    simulate_game(RandomBot(), RandomBot(), RandomBot(), RandomBot(), 3, True)
-    simulate_game(SimpleBot(), SimpleBot(), SimpleBot(), SimpleBot(), 3, True)
+#    simulate_game(RandomBot(), RandomBot(), RandomBot(), RandomBot(), 3, None, True)
+    simulate_game(SimpleBot(nof_eval_games=100),
+                  SimpleBot(nof_eval_games=100),
+                  SimpleBot(nof_eval_games=100),
+                  SimpleBot(nof_eval_games=100), 3, None, True)

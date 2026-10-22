@@ -404,7 +404,7 @@ class MCTSCheater(Agent):
         """
         if simple:
             # agents selecting legal moves using lightweight heuristics.
-            bots = [SimpleBot() for _ in range(NOF_PLAYERS)]
+            bots = [SimpleBot(nof_eval_games=0) for _ in range(NOF_PLAYERS)]
         else:
             # agents selecting legal moves at random.
             bots = [RandomBot() for _ in range(NOF_PLAYERS)]
@@ -563,13 +563,15 @@ def cheater_vs_simple():
     game.start_round()
     print("------------------------------------------------------------------------------")
 
-    # create MCTSCheater using 100 rollouts and temperatur=0.7.
-    agent1 = MCTSCheater(100, temperature=0.7, simple=False, log_tree=False,
+    # create 2 MCTSCheater bots using 100 rollouts and temperatur=0.7.
+    agent1 = MCTSCheater(100, temperature=0.7, simple=True, log_tree=False,
                          max_depth=3, log_nlwt=False, show_trick=-2,
                          show_player=-1)
-    # create 3 bots using simple heuristic to select moves.
+    agent3 = MCTSCheater(100, temperature=0.7, simple=True, log_tree=False,
+                         max_depth=3, log_nlwt=False, show_trick=-2,
+                         show_player=-1)
+    # create 2 bots using simple heuristic to select moves.
     agent2 = SimpleBot()
-    agent3 = SimpleBot()
     agent4 = SimpleBot()
     agents = [agent1, agent2, agent3, agent4]
     game.print_state()

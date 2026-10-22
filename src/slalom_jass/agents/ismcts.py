@@ -515,7 +515,7 @@ class ISMCTSAgent(Agent):
         """
         if simple:
             # agents selecting legal moves using lightweight heuristics.
-            bots = [SimpleBot() for _ in range(NOF_PLAYERS)]
+            bots = [SimpleBot(nof_eval_games=0) for _ in range(NOF_PLAYERS)]
         else:
             # agents selecting legal moves at random.
             bots = [RandomBot() for _ in range(NOF_PLAYERS)]
@@ -749,10 +749,10 @@ def ismcts_vs_simple():
     print("------------------------------------------------------------------------------")
 
     # create 2 ISMCTSAgent using 100 rollouts and temperatur=0.7.
-    agent1 = ISMCTSAgent(100, temperature=0.7, simple=False, log_tree=False,
+    agent1 = ISMCTSAgent(100, temperature=0.7, simple=True, log_tree=False,
                          max_depth=3, log_nlwt=False, show_trick=-2,
                          show_player=-1)
-    agent3 = ISMCTSAgent(100, temperature=0.7, simple=False, log_tree=False,
+    agent3 = ISMCTSAgent(100, temperature=0.7, simple=True, log_tree=False,
                          max_depth=3, log_nlwt=False, show_trick=-2,
                          show_player=-1)
 
