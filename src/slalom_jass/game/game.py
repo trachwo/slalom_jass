@@ -895,8 +895,8 @@ def simulate_game(agent1, agent2, agent3, agent4, dealer=3, scenario=None,
 
     if verbose:
         # print detailed results
-        print("--------------------------------------------------------------"
-              "--------------------------------------")
+        print("----------------------------------------------------------------"
+              "-------------")
         print(f"   {'Obenabe' if game.obenabe else 'Undeufe'}:")
         print("   --------")
         for p, player in enumerate(game.players):

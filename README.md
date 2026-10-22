@@ -105,7 +105,7 @@ To verify the installation, go to the 'slalom_jass/src' directory and run a
 short test:
 
     $ cd my_path/slalom_jass/src
-    $ python3 bot_vs_bots --bot13 simple --bot24 random -n 5
+    $ python3 bots_vs_bots --bot13 simple --bot24 random -n 5
 
 You should immediatly see something similar to the output below:
 ```
@@ -142,7 +142,7 @@ After installation, you should see the following file structure:
 >           |
 >           +--- src/
 >                 |
->                 +--- bot_vs_bots.py
+>                 +--- bots_vs_bots.py
 >                 |
 >                 +--- human_vs_bots.py
 >                 |
@@ -202,7 +202,7 @@ After installation, you should see the following file structure:
 **LICENSE**: MIT License.
 
 **src/**: Python source code:
-- **bot_vs_bots.py**: Let bots play against themselves.
+- **bots_vs_bots.py**: Let bots play against themselves.
 - **human_vs_bots.py**: Let human player play against bots.
 
 **src/slalom_jass**: slalom_jass sub-modules:
@@ -456,3 +456,246 @@ MCTS for a 4-player game with imperfect information:
 
 
 # Usage #
+
+## human_vs_bots.py ##
+
+If you want to play against one type of bot yourself.
+
+    $ cd my_path/slalom_jass/src
+    $ python3 human_vs_bots -h
+```
+    usage: human_vs_bots.py [-h] --bots BOTS [--first {1,2,3,4}] [--scenario SCENARIO]
+
+    options:
+      -h, --help            show this help message and exit
+      --bots BOTS
+      --first {1,2,3,4}, -f {1,2,3,4}
+                            Set starting player (1-4).
+      --scenario SCENARIO, -s SCENARIO
+                            load scenario file.
+```
+
+E.g. play against **ismcts** and Player1 plays first (default):
+
+    $ cd my_path/slalom_jass/src
+    $ python3 human_vs_bots --bots ismcts
+
+```
+------------------------------------------------------------------------------
+Declarations
+------------------------------------------------------------------------------
+*  Player1: K♣  7♢  10♢  7♡  10♡  A♡  6♠  8♠  10♠
+   Player2: 8♣  Q♣  6♢  9♢  Q♢  A♢  6♡  J♡  K♡
+   Player3: 7♣  10♣  8♢  J♢  K♢  8♡  9♡  7♠  J♠
+   Player4: 6♣  9♣  J♣  A♣  Q♡  9♠  Q♠  K♠  A♠
+
+   Player1 select: 0:Schiebe  1:Obenabe  2:Undeufe ? 0
+
+   Player1: Schiebe
+   Player2: Obenabe
+------------------------------------------------------------------------------
+Trick 1: Obenabe
+------------------------------------------------------------------------------
+   Player1: K♣  7♢  10♢  7♡  10♡  A♡  6♠  8♠  10♠
+*  Player2: 8♣  Q♣  6♢  9♢  Q♢  A♢  6♡  J♡  K♡
+   Player3: 7♣  10♣  8♢  J♢  K♢  8♡  9♡  7♠  J♠
+   Player4: 6♣  9♣  J♣  A♣  Q♡  9♠  Q♠  K♠  A♠
+   Trick:   J♡
+
+   Player1: K♣  7♢  10♢  7♡  10♡  A♡  6♠  8♠  10♠
+   Player2: 8♣  Q♣  6♢  9♢  Q♢  A♢  6♡  K♡
+*  Player3: 7♣  10♣  8♢  J♢  K♢  8♡  9♡  7♠  J♠
+   Player4: 6♣  9♣  J♣  A♣  Q♡  9♠  Q♠  K♠  A♠
+   Trick:   J♡  9♡
+
+   Player1: K♣  7♢  10♢  7♡  10♡  A♡  6♠  8♠  10♠
+   Player2: 8♣  Q♣  6♢  9♢  Q♢  A♢  6♡  K♡
+   Player3: 7♣  10♣  8♢  J♢  K♢  8♡  7♠  J♠
+*  Player4: 6♣  9♣  J♣  A♣  Q♡  9♠  Q♠  K♠  A♠
+   Trick:   J♡  9♡  Q♡
+
+*  Player1: K♣  7♢  10♢  7♡  10♡  A♡  6♠  8♠  10♠
+   Player2: 8♣  Q♣  6♢  9♢  Q♢  A♢  6♡  K♡
+   Player3: 7♣  10♣  8♢  J♢  K♢  8♡  7♠  J♠
+   Player4: 6♣  9♣  J♣  A♣  9♠  Q♠  K♠  A♠
+   0:7♡  1:10♡  2:A♡ ? 
+```
+
+E.g. play against **cheater**, Player3 plays first, and the card distribution
+is loaded from **scenario_2.cs**:
+
+    $ cd my_path/slalom_jass/src
+    $ python3 human_vs_bots.py --bot cheater --first 3 --scenario scenario_2
+
+```
+------------------------------------------------------------------------------
+Declarations
+------------------------------------------------------------------------------
+   Player1: 7♣  9♣  8♢  J♢  7♡  10♡  8♠  J♠  K♠
+   Player2: 9♢  9♠  6♡  K♡  A♢  7♠  10♢  6♢  6♠
+*  Player3: J♡  7♢  A♣  Q♡  A♡  A♠  J♣  10♠  9♡
+   Player4: Q♠  Q♣  6♣  K♣  Q♢  K♢  8♡  10♣  8♣
+   Player3: Schiebe
+   Player4: Undeufe
+
+------------------------------------------------------------------------------
+Trick 1: Undeufe
+------------------------------------------------------------------------------
+   Player1: 7♣  9♣  8♢  J♢  7♡  10♡  8♠  J♠  K♠
+   Player2: 9♢  9♠  6♡  K♡  A♢  7♠  10♢  6♢  6♠
+   Player3: J♡  7♢  A♣  Q♡  A♡  A♠  J♣  10♠  9♡
+*  Player4: Q♠  Q♣  6♣  K♣  Q♢  K♢  8♡  10♣  8♣
+   Trick:   Q♢
+
+*  Player1: 7♣  9♣  8♢  J♢  7♡  10♡  8♠  J♠  K♠
+   Player2: 9♢  9♠  6♡  K♡  A♢  7♠  10♢  6♢  6♠
+   Player3: J♡  7♢  A♣  Q♡  A♡  A♠  J♣  10♠  9♡
+   Player4: Q♠  Q♣  6♣  K♣  K♢  8♡  10♣  8♣
+   0:8♢  1:J♢ ? 
+```
+
+## bots_vs_bots.py ##
+
+Let 2 bot-teams play against each other.
+
+    $ cd my_path/slalom_jass/src
+    $ python3 bots_vs_bots.py -h
+
+```
+    usage: bots_vs_bots.py [-h] --bot13 BOT13 [--bot24 BOT24] [--num-games NUM_GAMES] [--verbose] [--first {1,2,3,4}] [--scenario SCENARIO]
+
+    options:
+      -h, --help            show this help message and exit
+      --bot13 BOT13         type of Player1/Player3 bot.
+      --bot24 BOT24         type of Player2/Player4 bot.
+      --num-games NUM_GAMES, -n NUM_GAMES
+                        number of games played.
+      --verbose, -v         show played cards.
+      --first {1,2,3,4}, -f {1,2,3,4}
+                            Set starting player (1-4).
+      --scenario SCENARIO, -s SCENARIO
+                            load scenario file.
+```
+
+E.g. let **ismcts** play **1** round against **simple**, **Player4** plays
+first, and we want to see detailed output:
+
+    $ cd my_path/slalom_jass/src
+    $ python3 bots_vs_bots.py --bot13 ismcts --bot24 simple -n 1 -f 4 -v
+
+```
+      1/1 
+------------------------------------------------------------------------------
+   Player1: 6♣  J♣  Q♣  7♢  8♢  7♡  6♠  8♠  10♠
+   Player2: 7♣  10♣  Q♢  K♢  9♡  A♡  7♠  J♠  A♠
+   Player3: K♣  A♣  6♢  9♢  J♢  J♡  Q♡  K♡  K♠
+*  Player4: 8♣  9♣  10♢  A♢  6♡  8♡  10♡  9♠  Q♠
+
+   --------
+   Player4: Schiebe  Obenabe  Undeufe                        => Schiebe
+   Player1: Schiebe  Obenabe  Undeufe                        => Schiebe
+   Player2: Schiebe  Obenabe  Undeufe                        => Schiebe
+   Player3: Schiebe  Obenabe  Undeufe                        => Undeufe
+   --------
+   Trick 1: ↑
+   Player3: K♣  A♣  6♢  9♢  J♢  J♡  Q♡  K♡  K♠               => 6♢
+   Player4: 10♢  A♢                                          => 6♢  A♢
+   Player1: 7♢  8♢                                           => 6♢  A♢  8♢
+   Player2: Q♢  K♢                                           => 6♢  A♢  8♢  Q♢
+   --------
+   Trick 2: ↓
+   Player3: K♣  A♣  9♢  J♢  J♡  Q♡  K♡  K♠                   => Q♡
+   Player4: 6♡  8♡  10♡                                      => Q♡  6♡
+   Player1: 7♡                                               => Q♡  6♡  7♡
+   Player2: 9♡  A♡                                           => Q♡  6♡  7♡  A♡
+   --------
+   Trick 3: ↑
+   Player2: 7♣  10♣  K♢  9♡  7♠  J♠  A♠                      => 7♣
+   Player3: K♣  A♣                                           => 7♣  K♣
+   Player4: 8♣  9♣                                           => 7♣  K♣  9♣
+   Player1: 6♣  J♣  Q♣                                       => 7♣  K♣  9♣  Q♣
+   --------
+   Trick 4: ↓
+   Player2: 10♣  K♢  9♡  7♠  J♠  A♠                          => K♢
+   Player3: 9♢  J♢                                           => K♢  J♢
+   Player4: 10♢                                              => K♢  J♢  10♢
+   Player1: 7♢                                               => K♢  J♢  10♢  7♢
+   --------
+   Trick 5: ↑
+   Player2: 10♣  9♡  7♠  J♠  A♠                              => 7♠
+   Player3: K♠                                               => 7♠  K♠
+   Player4: 9♠  Q♠                                           => 7♠  K♠  9♠
+   Player1: 6♠  8♠  10♠                                      => 7♠  K♠  9♠  6♠
+   --------
+   Trick 6: ↓
+   Player1: 6♣  J♣  8♠  10♠                                  => 6♣
+   Player2: 10♣                                              => 6♣  10♣
+   Player3: A♣                                               => 6♣  10♣  A♣
+   Player4: 8♣                                               => 6♣  10♣  A♣  8♣
+   --------
+   Trick 7: ↑
+   Player3: 9♢  J♡  K♡                                       => 9♢
+   Player4: 8♡  10♡  Q♠                                      => 9♢  Q♠
+   Player1: J♣  8♠  10♠                                      => 9♢  Q♠  10♠
+   Player2: 9♡  J♠  A♠                                       => 9♢  Q♠  10♠  9♡
+   --------
+   Trick 8: ↓
+   Player3: J♡  K♡                                           => K♡
+   Player4: 8♡  10♡                                          => K♡  8♡
+   Player1: J♣  8♠                                           => K♡  8♡  J♣
+   Player2: J♠  A♠                                           => K♡  8♡  J♣  J♠
+   --------
+   Trick 9: ↑
+   Player3: J♡                                               => J♡
+   Player4: 10♡                                              => J♡  10♡
+   Player1: 8♠                                               => J♡  10♡  8♠
+   Player2: A♠                                               => J♡  10♡  8♠  A♠
+-------------------------------------------------------------------------------
+   Undeufe:
+   --------
+   Player1:  15 - 7♠ K♠ 9♠ 6♠
+   Player2:  37 - Q♡ 6♡ 7♡ A♡  7♣ K♣ 9♣ Q♣  K♢ J♢ 10♢ 7♢
+   Player3:  80 - 6♢ A♢ 8♢ Q♢  6♣ 10♣ A♣ 8♣  9♢ Q♠ 10♠ 9♡  K♡ 8♡ J♣ J♠
+   Player4:  25 - J♡ 10♡ 8♠ A♠  + 5
+------------------------------------------------------------------------------
+Player1:                   15  15
+Player2:                   37  37
+Player3:                   80  80
+Player4:                   25  25
+
+Player1 + Player3:         95  95
+Player2 + Player4:         62  62
+==============================================================================
+```
+
+E.g. let **ismcts** play **10** rounds against **cheater**, **Player1** plays
+first (default), we only want to see statistics output (default), and the card
+distribution is loaded from **scenario_2.cs**:
+
+    $ cd my_path/slalom_jass/src
+    $ python3 bots_vs_bots.py --bot13 ismcts --bot24 cheater -n 10 --scenario scenario_2 
+
+```
+          |     |     |     |     |    Average    |
+    Games |  P1 |  P2 |  P3 |  P4 | P1+P3 | P2+P4 | Time
+----------+-----+-----+-----+-----+-------+-------+-------
+     1/10 |   0 |  96 |  20 |  41 |   20  |  137  | 27.9s
+     2/10 |   0 |  16 |  22 | 119 |   21  |  136  | 28.4s
+     3/10 |   0 |   0 | 136 |  21 |   59  |   97  | 28.5s
+     4/10 |   0 | 128 |   0 |  29 |   44  |  112  | 28.4s
+     5/10 |  11 |  53 |   0 |  93 |   37  |  119  | 29.7s
+     6/10 |   0 |  53 |   0 | 104 |   31  |  125  | 25.7s
+     7/10 |   0 |   0 | 137 |  20 |   46  |  110  | 29.7s
+     8/10 |   0 |  62 |   0 |  95 |   40  |  116  | 26.9s
+     9/10 |   0 |  42 |   0 | 115 |   36  |  120  | 31.3s
+    10/10 |   0 |  22 |  18 | 117 |   34  |  122  | 26.8s
+------------------------------------------------------------------------------
+Player1:                   11   1
+Player2:                  472  47
+Player3:                  333  33
+Player4:                  754  75
+
+Player1 + Player3:        344  34
+Player2 + Player4:       1226 122
+==============================================================================
+```
