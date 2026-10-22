@@ -38,7 +38,8 @@ def load_agent(filename):
     elif data['type'] == 'random':
         agent = RandomBot()
     elif data['type'] == 'simple':
-        agent = SimpleBot(data['debug_player'])
+        agent = SimpleBot(data['debug_player'],
+                          data['nof_eval_games'])
     elif data['type'] == 'cheater':
         agent = MCTSCheater(data['num_rounds'],
                           data['temperature'],

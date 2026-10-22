@@ -699,3 +699,363 @@ Player1 + Player3:        344  34
 Player2 + Player4:       1226 122
 ==============================================================================
 ```
+
+# Agent Configuration Files #
+
+## random.json ##
+
+```
+{
+    "type": "random"
+}
+```
+Only contains the agent type (**DO NOT CHANGE IT**).
+
+## simple.json ##
+
+```
+{
+    "type": "simple",
+    "debug_player": -1,
+    "nof_eval_games": 100
+}
+```
+- **type**": agent type (**DO NOT CHANGE**).
+    - simple
+- **debug_player**: display selection details for this player.
+    - 0 => Player1
+    - 1 => Player2
+    - 2 => Player3
+    - 3 => Player4
+
+- **nof_eval_games**: number of evaluation games to decide for Schiebe, Obenabe, or Undeufe.
+    - =0 => random pick.
+    - \>0 => number of evaluation games.
+
+## cheater.json ##
+
+```
+{
+    "type": "cheater",
+    "num_rounds": 100,
+    "temperature": 0.7,
+    "simple": false,
+    "log_tree": false,
+    "max_depth": 3,
+    "log_nlwt": true,
+    "show_trick": -2,
+    "show_player": 0 
+}
+```
+- **type**": agent type (**DO NOT CHANGE**).
+    - cheater
+- **num_rounds**: number of MCTS rollouts.
+- **temperature**: exploitation/exploration ration.
+   - smaller => more exploitation (narrower tree)
+   - larger => mor exploratin (wider tree)
+- **simple**: select simulation bot.
+   - false => RandomBot.
+   - true => SimpleBot (slower but better results).
+- **log_tree**: show MCTS tree for player selected by 'show_player'.
+   - false => off.
+   - true => on.
+- **max_depth**: maximum number of levels shown by 'log_tree'.
+- **log_nlwt**: show number of nodes, levels, win percentage, and time for
+                player selected by 'show_player'.
+   - false => off.
+   - true => on.
+- **show_trick**: game state for which we want to see MCTS details for the
+                  player selected by 'show_player'.
+   - -1 => declaration phase.
+   - 0 - 8 => trick1 - trick9.
+   - other => off. 
+- **show_player**: show MCTS details for this player.
+   - 0 => Player1.
+   - 1 => Player2.
+   - 2 => Player3.
+   - 3 => Player4.
+
+## ismcts.json ##
+
+```
+{
+    "type": "ismcts",
+    "num_rounds": 200,
+    "temperature": 0.7,
+    "simple": false,
+    "log_tree": false,
+    "max_depth": 3,
+    "log_nlwt": false,
+    "show_trick": -2,
+    "show_player": 0 
+}
+```
+- **type**": agent type (**DO NOT CHANGE**).
+    - ismcts
+- **num_rounds**: number of MCTS rollouts.
+- **temperature**: exploitation/exploration ration.
+   - smaller => more exploitation (narrower tree)
+   - larger => mor exploratin (wider tree)
+- **simple**: select simulation bot.
+   - false => RandomBot.
+   - true => SimpleBot (slower but better results).
+- **log_tree**: show MCTS tree for player selected by 'show_player'.
+   - false => off.
+   - true => on.
+- **max_depth**: maximum number of levels shown by 'log_tree'.
+- **log_nlwt**: show number of nodes, levels, win percentage, and time for
+                player selected by 'show_player'.
+   - false => off.
+   - true => on.
+- **show_trick**: game state for which we want to see MCTS details for the
+                  player selected by 'show_player'.
+   - -1 => declaration phase.
+   - 0 - 8 => trick1 - trick9.
+   - other => off. 
+- **show_player**: show MCTS details for this player.
+   - -1 => off.
+   - 0 => Player1.
+   - 1 => Player2.
+   - 2 => Player3.
+   - 3 => Player4.
+
+### log_nlwt ###
+
+To see a little MCTS info for Player1 set:
+
+```
+{
+    "type": "ismcts",
+    ...
+    "log_nlwt": true,
+    ...
+    "show_player": 0 
+}
+```
+
+It's best used when running bots_vs_bots.py in verbose mode:
+
+    $ cd my_path/slalom_jass/src
+    $ python3 bots_vs_bots.py --bot13 ismcts --bot24 simple -n 1 --verbose
+
+```
+       1/1 
+------------------------------------------------------------------------------
+*  Player1: 9♣  10♣  J♣  K♣  10♢  A♢  9♡  7♠  8♠
+   Player2: 6♣  8♣  Q♣  A♣  9♢  K♢  7♡  J♡  K♡
+   Player3: 7♢  8♢  Q♢  A♡  6♠  9♠  10♠  J♠  A♠
+   Player4: 7♣  6♢  J♢  6♡  8♡  10♡  Q♡  Q♠  K♠
+
+
+   nodes:200 levels:6 wins:44.4% time:13.42 ms/rollout
+
+   --------
+   Player1: Schiebe  Obenabe  Undeufe                        => Schiebe
+```
+Now we get a log message before each play selection of Player1:
+- nodes:200 => the MCTS tree contains 200 nodes.
+- levels:6 => the MCTS tree is 6 levels deep.
+- wins:44.4% => the selected play had a win ratio (wins/visited) of 44.4%.
+- time:13.42 ms/rollout => it took an average time of 13.42 ms per rollout.
+
+### log_tree ###
+
+To see more MCTS info we can log the tree:
+```
+{
+    "type": "ismcts",
+    ...
+    "log_tree": true,
+    "max_depth": 3,
+    ...
+    "show_player": 0 
+}
+```
+
+    $ cd my_path/slalom_jass/src
+    $ python3 bots_vs_bots.py --bot13 ismcts --bot24 simple -n 1 --verbose
+```
+      1/1 
+------------------------------------------------------------------------------
+*  Player1: 7♣  9♣  8♢  A♢  6♡  10♡  J♡  K♡  9♠
+   Player2: 8♣  10♣  Q♢  7♡  6♠  10♠  J♠  Q♠  K♠
+   Player3: 6♣  K♣  A♣  9♢  10♢  J♢  K♢  9♡  7♠
+   Player4: J♣  Q♣  6♢  7♢  8♡  Q♡  A♡  8♠  A♠
+
+
+root
+-- 1 -- P1 Obenabe 198 0.536
+---- 2 ---- P1 A♢ 161 0.553
+------ 3 ------ P2 K♢ 36 0.486
+------ 3 ------ P2 6♢ 32 0.442
+------ 3 ------ P2 7♢ 23 0.437
+------ 3 ------ P2 Q♢ 19 0.420
+------ 3 ------ P2 J♢ 18 0.513
+------ 3 ------ P2 10♢ 14 0.405
+------ 3 ------ P2 9♢ 12 0.389
+------ 3 ------ P2 A♠ 1 0.828
+------ 3 ------ P2 10♣ 1 0.452
+------ 3 ------ P2 A♡ 1 0.000
+------ 3 ------ P2 8♠ 1 0.223
+------ 3 ------ P2 6♠ 1 0.369
+------ 3 ------ P2 J♠ 1 0.866
+---- 2 ---- P1 J♡ 20 0.506
+------ 3 ------ P2 A♡ 6 0.739
+------ 3 ------ P2 7♡ 3 0.518
+------ 3 ------ P2 8♡ 2 0.580
+------ 3 ------ P2 Q♡ 2 0.344
+------ 3 ------ P2 9♡ 2 0.436
+------ 3 ------ P2 6♠ 1 0.146
+------ 3 ------ P2 A♣ 1 0.299
+------ 3 ------ P2 J♠ 1 0.580
+------ 3 ------ P2 A♠ 1 0.153
+---- 2 ---- P1 7♣ 9 0.495
+------ 3 ------ P2 Q♣ 2 0.615
+------ 3 ------ P2 6♣ 1 0.344
+------ 3 ------ P2 J♣ 1 0.146
+------ 3 ------ P2 8♣ 1 0.102
+------ 3 ------ P2 K♣ 1 1.000
+------ 3 ------ P2 A♣ 1 0.459
+------ 3 ------ P2 10♣ 1 0.790
+---- 2 ---- P1 8♢ 2 0.478
+------ 3 ------ P2 J♢ 1 0.561
+---- 2 ---- P1 9♠ 1 0.089
+---- 2 ---- P1 6♡ 1 0.268
+---- 2 ---- P1 10♡ 1 0.369
+---- 2 ---- P1 K♡ 1 0.115
+---- 2 ---- P1 9♣ 1 0.121
+-- 1 -- P1 Undeufe 1 0.153
+-- 1 -- P1 Schiebe 1 0.000
+   --------
+   Player1: Schiebe  Obenabe  Undeufe                        => Obenabe
+```
+Now we see before each decision of Player1 the MCTS tree built to make this
+decision. Only 3 of 6 levels (see 'log_nlwt' example above) are shown, but
+to understand the decision 1 level ("max_depth": 1) is usually enough:
+
+```
+------------------------------------------------------------------------------
+*  Player1: 6♣  8♣  J♣  8♢  J♢  6♡  9♡  J♠  A♠
+   Player2: 9♣  Q♣  K♣  Q♢  8♡  J♡  7♠  10♠  K♠
+   Player3: A♣  6♢  9♢  10♢  A♢  7♡  Q♡  A♡  9♠
+   Player4: 7♣  10♣  7♢  K♢  10♡  K♡  6♠  8♠  Q♠
+
+
+root
+-- 1 -- P1 Schiebe 197 0.509
+-- 1 -- P1 Undeufe 2 0.274
+-- 1 -- P1 Obenabe 1 0.268
+   --------
+   Player1: Schiebe  Obenabe  Undeufe                        => Schiebe
+```
+
+Here, Player1 selected 197 out of 200 rollouts the path through the play 'Schiebe', which resulted in a 'wins/visited' ratio of 0.509 => 'Schiebe' was selected.
+
+### show_trick ###
+
+A detailed view of all 5 MCTS phase for one game state and player is available,
+if we set: 
+
+```
+{
+    "type": "ismcts",
+    ...
+    "show_trick": -1,
+    "show_player": 0 
+}
+```
+
+    $ cd my_path/slalom_jass/src
+    $ python3 bots_vs_bots.py --bot13 ismcts --bot24 simple -n 1 --verbose
+
+```
+      1/1 
+------------------------------------------------------------------------------
+*  Player1: 10♣  Q♣  7♢  7♡  8♡  K♡  7♠  Q♠  A♠
+   Player2: 8♣  K♣  Q♢  6♡  9♡  J♡  Q♡  8♠  9♠
+   Player3: 6♣  9♣  A♣  6♢  8♢  9♢  10♢  10♠  J♠
+   Player4: 7♣  J♣  J♢  K♢  A♢  10♡  A♡  6♠  K♠
+
+ROLLOUT 1
+
+DETERMINISATION:
+*  Player1: 10♣  Q♣  7♢  7♡  8♡  K♡  7♠  Q♠  A♠
+   Player2: 7♣  Q♢  6♡  9♡  A♡  8♠  9♠  J♠  K♠
+   Player3: 9♣  K♣  A♣  10♢  K♢  10♡  Q♡  6♠  10♠
+   Player4: 6♣  8♣  J♣  6♢  8♢  9♢  J♢  A♢  J♡
+
+P1: Schiebe  Obenabe  Undeufe 
+EXPAND: Schiebe
+SIMULATE: P1:0 P2:28 P3:0 P4:129
+
+ROLLOUT 2
+
+DETERMINISATION:
+*  Player1: 10♣  Q♣  7♢  7♡  8♡  K♡  7♠  Q♠  A♠
+   Player2: 7♣  K♣  8♢  9♢  K♢  9♡  A♡  9♠  10♠
+   Player3: J♣  A♣  6♢  10♢  A♢  6♡  J♡  6♠  8♠
+   Player4: 6♣  8♣  9♣  J♢  Q♢  10♡  Q♡  J♠  K♠
+
+P1: Obenabe  Undeufe 
+EXPAND: Obenabe
+SIMULATE: P1:52 P2:36 P3:27 P4:42
+
+ROLLOUT 3
+
+DETERMINISATION:
+*  Player1: 10♣  Q♣  7♢  7♡  8♡  K♡  7♠  Q♠  A♠
+   Player2: 6♣  7♣  8♣  9♣  8♢  9♢  K♢  A♢  K♠
+   Player3: J♣  K♣  A♣  J♢  10♡  Q♡  A♡  6♠  10♠
+   Player4: 6♢  10♢  Q♢  6♡  9♡  J♡  8♠  9♠  J♠
+
+P1: Undeufe 
+EXPAND: Undeufe
+SIMULATE: P1:0 P2:106 P3:38 P4:13
+
+ROLLOUT 4
+
+DETERMINISATION:
+*  Player1: 10♣  Q♣  7♢  7♡  8♡  K♡  7♠  Q♠  A♠
+   Player2: 7♣  9♣  A♣  6♢  J♢  9♡  Q♡  A♡  J♠
+   Player3: J♣  K♣  8♢  10♢  K♢  A♢  6♡  8♠  10♠
+   Player4: 6♣  8♣  9♢  Q♢  10♡  J♡  6♠  9♠  K♠
+
+P1: Schiebe :0.00 Obenabe :0.50 Undeufe :0.24
+SELECT: Obenabe
+P1: 10♣  Q♣  7♢  7♡  8♡  K♡  7♠  Q♠  A♠ 
+EXPAND: K♡
+SIMULATE: P1:23 P2:94 P3:0 P4:40
+
+ROLLOUT 5
+
+DETERMINISATION:
+*  Player1: 10♣  Q♣  7♢  7♡  8♡  K♡  7♠  Q♠  A♠
+   Player2: 6♣  8♣  J♣  10♢  K♢  10♡  Q♡  10♠  J♠
+   Player3: 7♣  9♣  A♣  8♢  J♢  A♢  6♡  J♡  A♡
+   Player4: K♣  6♢  9♢  Q♢  9♡  6♠  8♠  9♠  K♠
+
+P1: Schiebe :0.00 Obenabe :0.32 Undeufe :0.24
+SELECT: Obenabe
+P1: 10♣  Q♣  7♢  7♡  8♡  7♠  Q♠  A♠ 
+EXPAND: 7♡
+SIMULATE: P1:0 P2:0 P3:157 P4:0
+
+ROLLOUT 6
+
+DETERMINISATION:
+*  Player1: 10♣  Q♣  7♢  7♡  8♡  K♡  7♠  Q♠  A♠
+   Player2: 8♣  K♣  9♢  Q♢  6♡  Q♡  A♡  8♠  9♠
+   Player3: 6♣  7♣  A♣  10♢  J♢  K♢  A♢  10♡  J♠
+   Player4: 9♣  J♣  6♢  8♢  9♡  J♡  6♠  10♠  K♠
+
+P1: Schiebe :0.00 Obenabe :0.55 Undeufe :0.24
+SELECT: Obenabe
+P1: 10♣  Q♣  7♢  8♡  7♠  Q♠  A♠ 
+EXPAND: 7♠
+SIMULATE: P1:0 P2:78 P3:49 P4:30
+...
+```
+Before Player1 makes the decision play "Schiebe', 'Obenabe', or 'Undeufe', all 5 phases of  200 rollouts are logged to show how the MCTS tree was built.
+
+
+
