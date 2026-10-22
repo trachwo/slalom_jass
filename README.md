@@ -1057,5 +1057,39 @@ SIMULATE: P1:0 P2:78 P3:49 P4:30
 ```
 Before Player1 makes the decision play "Schiebe', 'Obenabe', or 'Undeufe', all 5 phases of  200 rollouts are logged to show how the MCTS tree was built.
 
+# Scenario Files #
 
+Lines with leading '#' are comments.
+Each line has 10 fields separated by ','.
+- field 1: player (P1, P2, P3, or P4).
+- fields 2 - 10: cards in player's hand.
+   - rank-suit (rank: 6, 7, 8, 9, 10, J, Q, K, A suit: C, D, H, S)
 
+## scenario_1.cs ##
+
+Scenario, where cards for each player are specified.
+```
+# Slalom-Jass Scenario:
+# Player1: 7♣  9♣  8♢  J♢  7♡  10♡  8♠  J♠  K♠
+# Player2: 6♣  J♣  Q♣  10♢  Q♢  6♡  8♡  A♡  A♠
+# Player3: K♣  A♣  6♢  K♢  A♢  J♡  6♠  7♠  9♠
+# Player4: 8♣  10♣  7♢  9♢  9♡  Q♡  K♡  10♠  Q♠
+# 
+P1, 7-C, 9-C, 8-D, J-D, 7-H, 10-H, 8-S, J-S, K-S
+P2, 6-C, J-C, Q-C, 10-D, Q-D, 6-H, 8-H, A-H, A-S
+P3, K-C, A-C, 6-D, K-D, A-D, J-H, 6-S, 7-S, 9-S
+P4, 8-C, 10-C, 7-D, 9-D, 9-H, Q-H, K-H, 10-S, Q-S
+```
+
+## scenario_2.cs ##
+
+Scenario, where only Player1's cards are specified.
+The remaining cards will be randomly distributed to Player2, Player3, and
+Player4.
+
+```
+# Slalom-Jass Scenario:
+# Player1: 7♣  9♣  8♢  J♢  7♡  10♡  8♠  J♠  K♠
+# 
+P1, 7-C, 9-C, 8-D, J-D, 7-H, 10-H, 8-S, J-S, K-S
+```
