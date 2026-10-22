@@ -127,16 +127,20 @@ def main():
         # simulate 1 game
         points = simulate_game(agent1, agent2, agent3, agent4, dealer, scenario,
                                args.verbose)
+
+        # calculate current total and average
+        total = [total[x] + points[x] for x in range(len(total))]
+        avg_13 = int((total[0] + total[2]) / (i + 1))
+        avg_24 = int((total[1] + total[3]) / (i + 1))
+
         if args.verbose:
             print("------------------------------------------------------------"
                   "----------------------------------------")
         else:
-            print(f"P1:{points[0]:>3} P2:{points[1]:>3} P3:{points[2]:>3}"
-                  f" P4:{points[3]:>3}   time:{time.time() - start_time:.1f}s")
-
-        # add to total points
-        for i in range(4):
-            total[i] += points[i]
+            print(f"P1:{points[0]:>3}   P2:{points[1]:>3}   P3:{points[2]:>3}"
+                  f"   P4:{points[3]:>3}   P1+P3: {total[0] + total[2]:>5}"
+                  f" {avg_13:>3}   P2+P4: {total[1] + total[3]:>5} {avg_24:>3}"
+                  f"   Time: {time.time() - start_time:.1f}s")
 
         # next dealer
         dealer = (dealer + 1) % 4
@@ -146,13 +150,13 @@ def main():
         print("----------------------------------------------------------------"
               "------------------------------------")
     for i in range(4):
-        print(f"Player{i+1}: {total[i]:>20} {total[i]/args.num_games:.2f}")
+        print(f"Player{i+1}: {total[i]:>20} {int(total[i]/args.num_games):>3}")
     print()
     print(f"Player1 + Player3: {total[0] + total[2]:>10}"
-          f" {(total[0] + total[2])/args.num_games:.2f}")
+          f" {int((total[0] + total[2])/args.num_games):>3}")
 
     print(f"Player2 + Player4: {total[1] + total[3]:>10}"
-          f" {(total[1] + total[3])/args.num_games:.2f}")
+          f" {int((total[1] + total[3])/args.num_games):>3}")
 
     print("===================================================================="
           "================================")
