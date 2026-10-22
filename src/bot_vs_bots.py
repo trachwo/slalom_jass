@@ -129,7 +129,7 @@ def main():
         if args.verbose:
             # show details
             print("\n----------------------------------------------------------"
-                  "------------------------------------------")
+                  "--------------------")
         # simulate 1 game
         points = simulate_game(agent1, agent2, agent3, agent4, dealer, scenario,
                                args.verbose)
@@ -141,7 +141,7 @@ def main():
 
         if args.verbose:
             print("------------------------------------------------------------"
-                  "----------------------------------------")
+                  "------------------")
         else:
             print(f"| {points[0]:>3} | {points[1]:>3} | {points[2]:>3} |"
                   f" {points[3]:>3} | {avg_13:>4}  | {avg_24:>4}  |"
@@ -153,7 +153,7 @@ def main():
     # print final score
     if not args.verbose:
         print("----------------------------------------------------------------"
-              "------------------------------------")
+              "--------------")
     for i in range(4):
         print(f"Player{i+1}: {total[i]:>20} {int(total[i]/args.num_games):>3}")
     print()
@@ -164,7 +164,7 @@ def main():
           f" {int((total[1] + total[3])/args.num_games):>3}")
 
     print("===================================================================="
-          "================================")
+          "==========")
 
 if __name__ == '__main__':
     main()
