@@ -1015,7 +1015,7 @@ Here, Player1 selected 197 out of 200 rollouts the path through the play 'Schieb
 
 ## show_trick ##
 
-A detailed view of all 5 MCTS phase for one game state and player is available,
+A detailed view of all 5 MCTS phases for one game state and player is available,
 if we set: 
 
 ```
@@ -1117,5 +1117,246 @@ EXPAND: 7♠
 SIMULATE: P1:0 P2:78 P3:49 P4:30
 ...
 ```
-Before Player1 makes the decision play "Schiebe', 'Obenabe', or 'Undeufe', all 5 phases of  200 rollouts are logged to show how the MCTS tree was built.
+Before Player1 makes the decision to play "Schiebe', 'Obenabe', or 'Undeufe',
+all 5 phases of 200 rollouts are logged to show how the MCTS tree was built.
 This is mainly used for debugging or for a better understanding of the MCTS process.
+
+# ISMCTS Testing #
+
+Testing ISMCTS agents to find the optimum 'num_rounds', 'temperature', and
+'simple' parameters. 
+
+## Number of Games ##
+
+Wnen running a test with:
+
+    $ cd my_path/slalom_jass/src
+    $ python3 bots_vs_bots.py --bot13 ismcts --bot24 simple -n 300
+
+We'll see a lot of change in the averages during the 1st few games:
+```
+          |     |     |     |     |    Average    |
+    Games |  P1 |  P2 |  P3 |  P4 | P1+P3 | P2+P4 | Time
+----------+-----+-----+-----+-----+-------+-------+-------
+    1/300 |  96 |   0 |   0 |  61 |   96  |   61  | 24.4s
+    2/300 |   4 |  59 |  94 |   0 |   97  |   60  | 18.5s
+    3/300 |   0 |   0 | 134 |  23 |  109  |   47  | 23.8s
+    4/300 | 157 |   0 |   0 |   0 |  121  |   35  | 25.1s
+    5/300 | 108 |   0 |  49 |   0 |  128  |   28  | 26.5s
+    6/300 |  30 |  34 |  67 |  26 |  123  |   33  | 27.4s
+    7/300 |  61 |  52 |  44 |   0 |  120  |   36  | 25.9s
+    8/300 |   0 |  55 |  61 |  41 |  113  |   43  | 19.3s
+    9/300 |  39 |  95 |   0 |  23 |  104  |   52  | 22.7s
+   10/300 |  38 |   0 | 119 |   0 |  110  |   46  | 23.4s
+   ...
+```
+
+But after 100 games the averages settle around certain values:
+```
+          |     |     |     |     |    Average    |
+    Games |  P1 |  P2 |  P3 |  P4 | P1+P3 | P2+P4 | Time
+----------+-----+-----+-----+-----+-------+-------+-------
+  ...
+  100/300 | 157 |   0 |   0 |   0 |   89  |   67  | 24.5s
+  101/300 |  61 |   0 |  96 |   0 |   89  |   67  | 25.8s
+  102/300 | 140 |   3 |   0 |  14 |   90  |   66  | 22.1s
+  103/300 |  25 |  24 |  67 |  41 |   90  |   66  | 22.6s
+  104/300 |   0 | 145 |  12 |   0 |   89  |   67  | 21.3s
+  105/300 |  89 |  29 |   6 |  33 |   89  |   67  | 21.8s
+  106/300 |   0 |  87 |   0 |  70 |   88  |   68  | 15.6s
+  107/300 |  59 |   0 |   0 |  98 |   88  |   68  | 24.0s
+  108/300 |   0 |   0 |  24 | 133 |   88  |   68  | 20.8s
+  109/300 |   0 |  19 | 122 |  16 |   88  |   68  | 25.9s
+  110/300 |  31 |  25 | 101 |   0 |   88  |   68  | 20.9s
+  ...
+  200/300 |  72 |  27 |   0 |  58 |   89  |   67  | 22.3s
+  201/300 |   0 |  27 | 130 |   0 |   89  |   67  | 28.9s
+  202/300 | 117 |  40 |   0 |   0 |   89  |   67  | 17.0s
+  203/300 |   0 |  21 |  91 |  45 |   89  |   67  | 20.3s
+  204/300 |   0 |   0 |  85 |  72 |   89  |   67  | 20.7s
+  205/300 |  26 |  99 |   0 |  32 |   89  |   67  | 25.5s
+  206/300 |   0 |  33 |  73 |  51 |   89  |   67  | 26.7s
+  207/300 |   0 |   0 | 157 |   0 |   89  |   67  | 25.3s
+  208/300 |  49 |  54 |   0 |  54 |   89  |   67  | 20.2s
+  209/300 |  72 |  25 |   0 |  60 |   89  |   67  | 25.3s
+  210/300 |  97 |  23 |   0 |  37 |   89  |   67  | 25.2s
+```
+
+=> Tests should be run over **at least 100 games**.
+
+## Simulation with RandomBot or SimpleBot  ##
+
+RandomBot is faster but SimpleBot is expected to get better results.
+
+600 rollouts with temperature 0.7 simulating with **RandomBot**:
+
+```
+          |     |     |     |     |    Average    |
+    Games |  P1 |  P2 |  P3 |  P4 | P1+P3 | P2+P4 | Time
+----------+-----+-----+-----+-----+-------+-------+-------
+  ...
+   95/100 |  20 |  63 |  13 |  61 |   79  |   77  | 37.5s
+   96/100 |  53 |  29 |   0 |  75 |   79  |   77  | 24.8s
+   97/100 |  46 |  43 |  10 |  58 |   79  |   77  | 39.4s
+   98/100 |  30 |  96 |  31 |   0 |   78  |   78  | 27.4s
+   99/100 |  59 |  52 |  40 |   6 |   79  |   77  | 35.1s
+  100/100 |   0 |  89 |  68 |   0 |   78  |   78  | 30.4s
+----------------------------------------------------------
+Player1:                 4601  46
+Player2:                 4010  40
+Player3:                 3294  32
+Player4:                 3795  37
+
+Player1 + Player3:       7895  78
+Player2 + Player4:       7805  78
+===========================================================
+```
+
+600 rollouts with temperature 0.7 simulating with **SimpleBot**:
+
+```
+          |     |     |     |     |    Average    |
+    Games |  P1 |  P2 |  P3 |  P4 | P1+P3 | P2+P4 | Time
+----------+-----+-----+-----+-----+-------+-------+-------
+   ...
+   95/100 |  93 |   0 |  64 |   0 |   88  |   68  | 47.6s
+   96/100 |  38 |   0 |  96 |  23 |   89  |   67  | 38.6s
+   97/100 | 157 |   0 |   0 |   0 |   89  |   67  | 39.3s
+   98/100 |  28 |  15 | 114 |   0 |   90  |   66  | 29.7s
+   99/100 |  25 |  47 |  85 |   0 |   90  |   66  | 40.3s
+  100/100 |  90 |  25 |  26 |  16 |   90  |   66  | 31.7s
+---------------------------------------------------------
+Player1:                 4912  49
+Player2:                 3292  32
+Player3:                 4160  41
+Player4:                 3336  33
+
+Player1 + Player3:       9072  90
+Player2 + Player4:       6628  66
+=========================================================
+```
+**SimpleBot** is not much slower than **RandomBot** but yields definitely
+better results.
+
+## Number of Rollouts ##
+
+The more rollouts, the better the results, but the longer it takes to play out
+a game.
+
+**100 rollouts** with temperature 0.7 simulating with SimpleBot:
+```
+          |     |     |     |     |    Average    |
+    Games |  P1 |  P2 |  P3 |  P4 | P1+P3 | P2+P4 | Time
+----------+-----+-----+-----+-----+-------+-------+-------
+   ...
+   95/100 |  36 |  56 |   0 |  65 |   82  |   74  | 5.3s
+   96/100 |  51 |   0 |   0 | 106 |   82  |   74  | 5.0s
+   97/100 |  40 |   0 |  12 | 105 |   82  |   74  | 6.4s
+   98/100 |  57 |   0 |  14 |  86 |   82  |   74  | 6.5s
+   99/100 |  61 |  60 |  36 |   0 |   82  |   74  | 6.8s
+  100/100 |  13 |  21 |  58 |  65 |   82  |   74  | 5.9s
+---------------------------------------------------------
+Player1:                 4059  40
+Player2:                 4126  41
+Player3:                 4152  41
+Player4:                 3363  33
+
+Player1 + Player3:       8211  82
+Player2 + Player4:       7489  74
+=========================================================
+```
+
+**600 rollouts** with temperature 0.7 simulating with SimpleBot:
+```
+          |     |     |     |     |    Average    |
+    Games |  P1 |  P2 |  P3 |  P4 | P1+P3 | P2+P4 | Time
+----------+-----+-----+-----+-----+-------+-------+-------
+   ...
+   95/100 |  93 |   0 |  64 |   0 |   88  |   68  | 47.6s
+   96/100 |  38 |   0 |  96 |  23 |   89  |   67  | 38.6s
+   97/100 | 157 |   0 |   0 |   0 |   89  |   67  | 39.3s
+   98/100 |  28 |  15 | 114 |   0 |   90  |   66  | 29.7s
+   99/100 |  25 |  47 |  85 |   0 |   90  |   66  | 40.3s
+  100/100 |  90 |  25 |  26 |  16 |   90  |   66  | 31.7s
+---------------------------------------------------------
+Player1:                 4912  49
+Player2:                 3292  32
+Player3:                 4160  41
+Player4:                 3336  33
+
+Player1 + Player3:       9072  90
+Player2 + Player4:       6628  66
+=========================================================
+```
+
+## Temperature ##
+
+600 rollouts with **temperature 0.35** simulating with SimpleBot:
+```
+          |     |     |     |     |    Average    |
+    Games |  P1 |  P2 |  P3 |  P4 | P1+P3 | P2+P4 | Time
+----------+-----+-----+-----+-----+-------+-------+-------
+   ...
+   95/100 |  30 | 105 |  22 |   0 |   80  |   76  | 39.1s
+   96/100 |  27 | 105 |   0 |  25 |   79  |   77  | 29.5s
+   97/100 | 157 |   0 |   0 |   0 |   80  |   76  | 38.6s
+   98/100 |   0 | 124 |  33 |   0 |   80  |   76  | 23.1s
+   99/100 | 144 |   0 |  13 |   0 |   80  |   76  | 42.8s
+  100/100 |  54 |  40 |  63 |   0 |   81  |   75  | 32.2s
+-----------------------------------------------------------
+Player1:                 4089  40
+Player2:                 4220  42
+Player3:                 4044  40
+Player4:                 3347  33
+
+Player1 + Player3:       8133  81
+Player2 + Player4:       7567  75
+============================================================
+```
+
+600 rollouts with **temperature 0.7** simulating with SimpleBot:
+```
+          |     |     |     |     |    Average    |
+    Games |  P1 |  P2 |  P3 |  P4 | P1+P3 | P2+P4 | Time
+----------+-----+-----+-----+-----+-------+-------+-------
+   ...
+   95/100 |  93 |   0 |  64 |   0 |   88  |   68  | 47.6s
+   96/100 |  38 |   0 |  96 |  23 |   89  |   67  | 38.6s
+   97/100 | 157 |   0 |   0 |   0 |   89  |   67  | 39.3s
+   98/100 |  28 |  15 | 114 |   0 |   90  |   66  | 29.7s
+   99/100 |  25 |  47 |  85 |   0 |   90  |   66  | 40.3s
+  100/100 |  90 |  25 |  26 |  16 |   90  |   66  | 31.7s
+---------------------------------------------------------
+Player1:                 4912  49
+Player2:                 3292  32
+Player3:                 4160  41
+Player4:                 3336  33
+
+Player1 + Player3:       9072  90
+Player2 + Player4:       6628  66
+=========================================================
+```
+
+
+600 rollouts with **temperature 1.4** simulating with SimpleBot:
+```
+          |     |     |     |     |    Average    |
+    Games |  P1 |  P2 |  P3 |  P4 | P1+P3 | P2+P4 | Time
+----------+-----+-----+-----+-----+-------+-------+-------
+   ...
+   95/100 |  69 |   0 |  10 |  78 |   85  |   71  | 41.1s
+   96/100 |  19 |  12 |  86 |  40 |   85  |   71  | 29.5s
+   97/100 |  35 |  71 |  51 |   0 |   85  |   71  | 38.3s
+   98/100 |  63 |  35 |  25 |  34 |   85  |   71  | 29.1s
+   99/100 |  63 |   0 |   0 |  94 |   85  |   71  | 39.7s
+  100/100 |  23 |   7 | 127 |   0 |   86  |   70  | 46.2s
+----------------------------------------------------------
+Player1:                 4521  45
+Player2:                 3685  36
+Player3:                 4107  41
+Player4:                 3387  33
+
+Player1 + Player3:       8628  86
+Player2 + Player4:       7072  70
+===========================================================
+```
