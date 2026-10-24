@@ -96,11 +96,11 @@ Install Python3:
 
 see <https://realpython.com/installing-python/>
 
-## Slalom-Jass
+## Slalom-Jass ##
 
 Clone the 'slalom_jass' repository or downnload the zip-file from **github** at
 
-<github.com/trachwo/slalom_jass>
+<https://github.com/trachwo/slalom_jass>
 
 with the green **'<> Code'** button.
 
@@ -131,6 +131,15 @@ Player4:                   35   7
 ===============================================================================
 ```
 
+## Windows11 ##
+
+If your cmd-terminal doesn't display the suit-symbols correctly, you have to select another font:
+
+1. \<Right Click\> Settings
+2. Defaults
+3. Text: Font face
+
+**'Cascadia Mono'** worked on my Windows11 installation.
 
 
 # Files
