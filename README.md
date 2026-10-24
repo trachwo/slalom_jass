@@ -4,8 +4,8 @@ This is a **Python** implementation of the trump-variant **Slalom** from the
 Swiss card game **Coiffeur-Jass**. This is a terminal-only implementation, i.e.
 there's no GUI. The main target was, to implement a **Single-Observer
 Information Set Monte Carlo Tree Search (SO-ISMCTS)** agent. The performance of
-different agents can be tested, by either letting them against each other or a
-human player.
+different agents can be tested, by either letting them play against each other
+or a human player.
 
 # Slalom-Jass Rules #
 'Jass' is the national card game of Switzerland. It's usually played with a
@@ -22,22 +22,22 @@ unicodes.
 | Eichle  | Spades   | ♠ |
 | Schilte | Diamonds | ♢ |
 | Rosen   | Clubs    | ♣ |
-| 6       | 6        |   |
-| 7       | 7        |   |
-| 8       | 8        |   |
-| 9       | 9        |   |
-| 10      | 10       |   |
-| Under   | J        |   |
-| Ober    | Q        |   |
-| König   | K        |   |
-| Ass     | A        |   |
+| 6       | 6        | 6 |
+| 7       | 7        | 7 |
+| 8       | 8        | 8 |
+| 9       | 9        | 9 |
+| 10      | 10       |10 |
+| Under   | Jack     | J |
+| Ober    | Queen    | Q |
+| König   | King     | K |
+| Ass     | Ace      | A |
 
 
 One of many Jass-variants is called Coiffeur-Jass. The name means hairdresser
 in French but actually comes from the similar sounding 'quoi faire' (what to do?).
 It is a trick-taking game for 4 players, where players sitting opposite of each
-other are building a team. The game is played over several rounds, where each
-round one of the players has to select a diffent different trump variant:
+other are building a team. The game is played over several rounds, where in each
+round one of the players has to select a different trump variant:
 - Eichle
 - Rosen
 - Schilten
@@ -91,15 +91,18 @@ gets an addtitional 5 points.
 # Installation #
 
 ## Python ##
-Install Python3:  
--> <https://realpython.com/installing-python/>
+
+Install Python3:
+
+see <https://realpython.com/installing-python/>
 
 ## Slalom-Jass
 
-Clone the 'slalom_jass' repository from **github**  
--> git@github.com:trachwo/slalom_jass.git
+Clone the 'slalom_jass' repository or downnload the zip-file from **github** at
 
-or download the zip-file **(green '<> Code' button)**
+<git@github.com:trachwo/slalom_jass.git>
+
+with the green **'<> Code'** button.
 
 To verify the installation, go to the 'slalom_jass/src' directory and run a
 short test:
@@ -214,8 +217,8 @@ After installation, you should see the following file structure:
 - **player.py**: Player class keeping track of player hands.
 - **info.py**: GameInfo class keeping track of played cards and suits not
                followed.
-- **scenario**: Scenario class used to load player hands from CSV-file.
-- **game**: GameState class containing the Slalom-Jass state machine.
+- **scenario.py**: Scenario class used to load player hands from CSV-file.
+- **game.py**: GameState class containing the Slalom-Jass state machine.
 
 **src/slalom_jass/agents/**: Game agents sub-module.
 - **__init__.py**: Makes *agents* a Python package.
@@ -225,17 +228,17 @@ After installation, you should see the following file structure:
                 (using simple heuristic for play selection).
 - **mcts_cheater.py**: MCTSCheater class => MCTS agent with perfect information
                        (i.e he is looking at other players' cards!)
-- **ismcts.py**: ISMCTSAgent class => Single-Observer Informatin Set MCTS agent.
+- **ismcts.py**: ISMCTSAgent class => Single-Observer Information Set MCTS agent.
 
 **src/data/agents**: Agent configuration files.
-- **human.json**: Human player configuraion.
+- **human.json**: Human player configuration.
 - **random.json**: RandomBot configuration.
 - **simple.json**: SimpleBot configuration.
 - **cheater.json**: MCTSCheater configuration.
 - **ismcts.json**: ISMCTSAgent configuration.
 
 **src/data/scenarios**: Scenarios with preset player hands.
-- **scenario_1.cs**: Example for scenario, where all hands are specidfied.
+- **scenario_1.cs**: Example for scenario, where all hands are specified.
 - **scenario_2.cs**: Example for scenario, where only one hand is specified.
 
 # Agents #
@@ -261,7 +264,7 @@ It is used for fast simulation in MCTS and as lower benchmark for other agents.
 
 ## simple ##
 
-Selects its card plays using simple heuristics. Declarations (Schiebe, Obenabe, Undeufe) are made either after playing a specified number of evaluation games, or randomly. It is expected to play better than **random** and is still fast enough to be used for fast simulation in MCTS (set the number of evaluation games to 0).
+Selects its card plays using simple heuristics. Declarations (Schiebe, Obenabe, Undeufe) are made either after playing a specified number of evaluation games, or randomly. It is expected to play better than **random** and is still fast enough to be used for fast simulation in MCTS (set 'nof_eval_games' to 0).
 
 ### SimpleBot heuristics ###
 **Playing 1st**:
@@ -323,12 +326,12 @@ with the best results) and exploration (following a path with rarely simulated
 moves).
 
 A very good introduction to MCTS can be found here:  
-https://medium.com/@quasimik/monte-carlo-tree-search-applied-to-letterpress-34f41c86e238
+<https://medium.com/@quasimik/monte-carlo-tree-search-applied-to-letterpress-34f41c86e238>
 
 Most MCTS examples found online are about 2 player games with perfect
 information like 'Connect 4' or 'Go'. But 'Slalom-Jass' is a 4-player game with
 imperfect information, i.e. players only know their own cards (=> available
-actions). **cheater** adapts MTCS for 4 players, which knows not only its own,
+actions). **cheater** adapts MTCS for 4 players, but knows not only its own
 but also the other players' cards, i.e. we treat 'Slalom-Jass' as a perfect
 information game.
 
@@ -355,7 +358,7 @@ rollout has the following 4 phases:
    are much better plays we will no longer find (multi-armed bandit dilemma).
    Therefore, we use the **Upper Confidence Bound for Trees (UCT)** to decide
    which node to go next. UCT calculates for each child a value (UCB1) which
-   consists part on the reward statistics (**explointation**, i.e. a node is
+   consists part on the reward statistics (**exploitation**, i.e. a node is
    selected more often, if it showed good results in previous rollouts) and
    part on the number of times it was selected so far (**exploration**, i.e.
    a child is selected because it has not been selected as often as the other
@@ -380,8 +383,8 @@ rollout has the following 4 phases:
    who selects a card in the root state wins a simulation, the win counter in
    the selected child is incremented, but the next child selected from there,
    corresponds to a play selected by the loser of the simulation and is
-   therefore not incremented.  
-   To adapt this for a 4-player game, we backpropagate a list of rewards
+   therefore not incremented).  
+   To adapt this for a **4-player game**, we backpropagate a list of rewards
    (0.0 - 1.0) per player and each passed node adds the reward for the player
    selecting a play in the parent state (node) to its reward statistics.
    Rewards are calculated, by summing up the card points of players per team
@@ -397,8 +400,9 @@ a player. It is expected to play better than **simple** but not as good as
 
 ### Single-Observer Information Set MCTS ###
 
-The IEEE paper about **Information Set Montecarlo Tree Search** can be found at:  
-https://eprints.whiterose.ac.uk/id/eprint/75048/
+The IEEE paper about **Information Set Montecarlo Tree Search** can be
+downloaded from:  
+<https://eprints.whiterose.ac.uk/id/eprint/75048/>
 
 
 We have to make the following changes to the multiplayer MCTS algorithm we used
@@ -415,7 +419,7 @@ MCTS for a 4-player game with imperfect information:
 
 2. **Selection**:
    Due to the random redistribution of opponent cards, it is now possible, that
-   a node (where one of the opponents selects the play) which was fully
+   a node (where one of the other players selects the play) which was fully
    expanded in a previous rollout, has now new unexpanded plays available in
    the current rollout. I.e. we can no longer rely on a fixed 'untried plays'
    or 'children' list, but have to get a list of legal plays from the current
@@ -424,16 +428,15 @@ MCTS for a 4-player game with imperfect information:
    opponent cards) have been expanded into child nodes, can we use the **Upper
    Confidence boundery for Trees (UCT)**, to move down the tree to one of the
    children.  
-   **NOTE**, that the calculation of the Upper Confidance Boundary (UCB1) has
+   **NOTE**, that the calculation of the Upper Confidence Boundary (UCB1) has
    also changed. If we would still use the number of times the parent was
    visited to calculate the exploration bonus, plays which appear seldomly in
    the list of legal plays for a node, will be overexplored. In the changed
    UCB1 calculation we have to replace the number of times the parent node was
    visited with the number of times the parent node was visited **and the child
-   node was available**. This also means that we increment the 'visits' count
-   in the **Selection** phase as long as the corresponding state and therefore
-   its legal plays are available (otherwise we would have to store a clone of
-   the state or at least the legal plays in the node).
+   node was available**. For this we move updating of the 'visits' counters
+   from the **Backpropagation** to the **Selection** phase, since this is where
+   we have the list of legal plays directly available.
 
 3. ***Expansion**:
    As soon as we get to a node, where not every available legal play for the
@@ -562,7 +565,9 @@ Let 2 bot-teams play against each other.
     $ python3 bots_vs_bots.py -h
 
 ```
-    usage: bots_vs_bots.py [-h] --bot13 BOT13 [--bot24 BOT24] [--num-games NUM_GAMES] [--verbose] [--first {1,2,3,4}] [--scenario SCENARIO]
+    usage: bots_vs_bots.py [-h] --bot13 BOT13 [--bot24 BOT24]
+                           [--num-games NUM_GAMES] [--verbose]
+                           [--first {1,2,3,4}] [--scenario SCENARIO]
 
     options:
       -h, --help            show this help message and exit
@@ -750,9 +755,9 @@ Only contains the agent type (**DO NOT CHANGE IT**).
 - **type**": agent type (**DO NOT CHANGE**).
     - cheater
 - **num_rounds**: number of MCTS rollouts.
-- **temperature**: exploitation/exploration ration.
+- **temperature**: exploitation/exploration ratio.
    - smaller => more exploitation (narrower tree)
-   - larger => mor exploratin (wider tree)
+   - larger => more exploration (wider tree)
 - **simple**: select simulation bot.
    - false => RandomBot.
    - true => SimpleBot (slower but better results).
@@ -760,8 +765,8 @@ Only contains the agent type (**DO NOT CHANGE IT**).
    - false => off.
    - true => on.
 - **max_depth**: maximum number of levels shown by 'log_tree'.
-- **log_nlwt**: show number of nodes, levels, win percentage, and time for
-                player selected by 'show_player'.
+- **log_nlwt**: show number of nodes, levels, win percentage, and time per
+                rollout for player selected by 'show_player'.
    - false => off.
    - true => on.
 - **show_trick**: game state for which we want to see MCTS details for the
@@ -793,9 +798,9 @@ Only contains the agent type (**DO NOT CHANGE IT**).
 - **type**": agent type (**DO NOT CHANGE**).
     - ismcts
 - **num_rounds**: number of MCTS rollouts.
-- **temperature**: exploitation/exploration ration.
+- **temperature**: exploitation/exploration ratio.
    - smaller => more exploitation (narrower tree)
-   - larger => mor exploratin (wider tree)
+   - larger => more exploration (wider tree)
 - **simple**: select simulation bot.
    - false => RandomBot.
    - true => SimpleBot (slower but better results).
@@ -803,8 +808,8 @@ Only contains the agent type (**DO NOT CHANGE IT**).
    - false => off.
    - true => on.
 - **max_depth**: maximum number of levels shown by 'log_tree'.
-- **log_nlwt**: show number of nodes, levels, win percentage, and time for
-                player selected by 'show_player'.
+- **log_nlwt**: show number of nodes, levels, win percentage, and time per
+                rollout for player selected by 'show_player'.
    - false => off.
    - true => on.
 - **show_trick**: game state for which we want to see MCTS details for the
@@ -819,7 +824,46 @@ Only contains the agent type (**DO NOT CHANGE IT**).
    - 2 => Player3.
    - 3 => Player4.
 
-### log_nlwt ###
+# Scenario Files #
+
+Lines with leading '#' are comments.  
+Each line has 10 fields separated by ','.
+- field 1: player (P1, P2, P3, or P4).
+- fields 2 - 10: cards in player's hand.
+   - rank-suit (rank: 6, 7, 8, 9, 10, J, Q, K, A suit: C, D, H, S)
+
+## scenario_1.cs ##
+
+Scenario, where cards for each player are specified.
+```
+# Slalom-Jass Scenario:
+# Player1: 7♣  9♣  8♢  J♢  7♡  10♡  8♠  J♠  K♠
+# Player2: 6♣  J♣  Q♣  10♢  Q♢  6♡  8♡  A♡  A♠
+# Player3: K♣  A♣  6♢  K♢  A♢  J♡  6♠  7♠  9♠
+# Player4: 8♣  10♣  7♢  9♢  9♡  Q♡  K♡  10♠  Q♠
+# 
+P1, 7-C, 9-C, 8-D, J-D, 7-H, 10-H, 8-S, J-S, K-S
+P2, 6-C, J-C, Q-C, 10-D, Q-D, 6-H, 8-H, A-H, A-S
+P3, K-C, A-C, 6-D, K-D, A-D, J-H, 6-S, 7-S, 9-S
+P4, 8-C, 10-C, 7-D, 9-D, 9-H, Q-H, K-H, 10-S, Q-S
+```
+
+## scenario_2.cs ##
+
+Scenario, where only Player1's cards are specified.  
+The remaining cards will be randomly distributed to Player2, Player3, and
+Player4.
+
+```
+# Slalom-Jass Scenario:
+# Player1: 7♣  9♣  8♢  J♢  7♡  10♡  8♠  J♠  K♠
+# 
+P1, 7-C, 9-C, 8-D, J-D, 7-H, 10-H, 8-S, J-S, K-S
+```
+
+# MCTS Analysis #
+
+## log_nlwt ##
 
 To see a little MCTS info for Player1 set:
 
@@ -858,7 +902,17 @@ Now we get a log message before each play selection of Player1:
 - wins:44.4% => the selected play had a win ratio (wins/visited) of 44.4%.
 - time:13.42 ms/rollout => it took an average time of 13.42 ms per rollout.
 
-### log_tree ###
+**Notes**:
+- The win ratio represents the value of the current state. E.g. the win ratio
+  for the very 1st play, gives us an evaluation of the chances to win the game
+  with this hand.
+- In the example above we saw that 200 rollouts created 200 nodes. With larger
+  rollout numbers it is possible to see 'nodes < rollouts'. In this cases some
+  of the nodes are terminal nodes. If we reach a terminal node during
+  **Selection**, we can skip **Expansion** and **Simulation** and immediately
+  execute **Backpropagation** to update the win statistics.
+
+## log_tree ##
 
 To see more MCTS info we can log the tree:
 ```
@@ -951,7 +1005,15 @@ root
 
 Here, Player1 selected 197 out of 200 rollouts the path through the play 'Schiebe', which resulted in a 'wins/visited' ratio of 0.509 => 'Schiebe' was selected.
 
-### show_trick ###
+**Notes**:
+- The 'wins/visited' ratio of the selected play gives us the value of this game
+  state (i.e. the chances to win the game with these cards).
+- The 'number of rollouts per play' count shows us the impact of the
+  'temperature' parameter. In this example we used a temperature of 0.7,
+  resulting in 197 rollouts through the child with the best win ratio
+  ('Schiebe'), while the 2nd best child ('Undeufe') got only 2 rollouts.
+
+## show_trick ##
 
 A detailed view of all 5 MCTS phase for one game state and player is available,
 if we set: 
@@ -1056,40 +1118,4 @@ SIMULATE: P1:0 P2:78 P3:49 P4:30
 ...
 ```
 Before Player1 makes the decision play "Schiebe', 'Obenabe', or 'Undeufe', all 5 phases of  200 rollouts are logged to show how the MCTS tree was built.
-
-# Scenario Files #
-
-Lines with leading '#' are comments.
-Each line has 10 fields separated by ','.
-- field 1: player (P1, P2, P3, or P4).
-- fields 2 - 10: cards in player's hand.
-   - rank-suit (rank: 6, 7, 8, 9, 10, J, Q, K, A suit: C, D, H, S)
-
-## scenario_1.cs ##
-
-Scenario, where cards for each player are specified.
-```
-# Slalom-Jass Scenario:
-# Player1: 7♣  9♣  8♢  J♢  7♡  10♡  8♠  J♠  K♠
-# Player2: 6♣  J♣  Q♣  10♢  Q♢  6♡  8♡  A♡  A♠
-# Player3: K♣  A♣  6♢  K♢  A♢  J♡  6♠  7♠  9♠
-# Player4: 8♣  10♣  7♢  9♢  9♡  Q♡  K♡  10♠  Q♠
-# 
-P1, 7-C, 9-C, 8-D, J-D, 7-H, 10-H, 8-S, J-S, K-S
-P2, 6-C, J-C, Q-C, 10-D, Q-D, 6-H, 8-H, A-H, A-S
-P3, K-C, A-C, 6-D, K-D, A-D, J-H, 6-S, 7-S, 9-S
-P4, 8-C, 10-C, 7-D, 9-D, 9-H, Q-H, K-H, 10-S, Q-S
-```
-
-## scenario_2.cs ##
-
-Scenario, where only Player1's cards are specified.
-The remaining cards will be randomly distributed to Player2, Player3, and
-Player4.
-
-```
-# Slalom-Jass Scenario:
-# Player1: 7♣  9♣  8♢  J♢  7♡  10♡  8♠  J♠  K♠
-# 
-P1, 7-C, 9-C, 8-D, J-D, 7-H, 10-H, 8-S, J-S, K-S
-```
+This is mainly used for debugging or for a better understanding of the MCTS process.
