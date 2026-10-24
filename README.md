@@ -100,7 +100,7 @@ see <https://realpython.com/installing-python/>
 
 Clone the 'slalom_jass' repository or downnload the zip-file from **github** at
 
-<git@github.com:trachwo/slalom_jass.git>
+<github.com/trachwo/slalom_jass>
 
 with the green **'<> Code'** button.
 
@@ -1015,8 +1015,8 @@ Here, Player1 selected 197 out of 200 rollouts the path through the play 'Schieb
 
 ## show_trick ##
 
-A detailed view of all 5 MCTS phases for one game state and player is available,
-if we set: 
+A detailed view of all 5 ISMCTS phases for one game state and player is
+available, if we set: 
 
 ```
 {
@@ -1117,7 +1117,7 @@ EXPAND: 7♠
 SIMULATE: P1:0 P2:78 P3:49 P4:30
 ...
 ```
-Before Player1 makes the decision to play "Schiebe', 'Obenabe', or 'Undeufe',
+Before Player1 makes the decision to play 'Schiebe', 'Obenabe', or 'Undeufe',
 all 5 phases of 200 rollouts are logged to show how the MCTS tree was built.
 This is mainly used for debugging or for a better understanding of the MCTS process.
 
@@ -1311,7 +1311,6 @@ Player4:                 3347  33
 
 Player1 + Player3:       8133  81
 Player2 + Player4:       7567  75
-============================================================
 ```
 
 600 rollouts with **temperature 0.7** simulating with SimpleBot:
@@ -1334,9 +1333,7 @@ Player4:                 3336  33
 
 Player1 + Player3:       9072  90
 Player2 + Player4:       6628  66
-=========================================================
 ```
-
 
 600 rollouts with **temperature 1.4** simulating with SimpleBot:
 ```
@@ -1358,5 +1355,6 @@ Player4:                 3387  33
 
 Player1 + Player3:       8628  86
 Player2 + Player4:       7072  70
-===========================================================
 ```
+
+A **temperature near 0.7** seems to be the right choice.

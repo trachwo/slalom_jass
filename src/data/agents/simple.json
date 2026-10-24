@@ -1,4 +1,5 @@
 {
     "type": "simple",
-    "debug_player": -1
+    "debug_player": -1,
+    "nof_eval_games": 100
 }
