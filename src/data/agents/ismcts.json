@@ -1,8 +1,8 @@
 {
     "type": "ismcts",
-    "num_rounds": 600,
+    "num_rounds": 300,
     "temperature": 0.7,
-    "simple": false,
+    "simple": true,
     "log_tree": false,
     "max_depth": 3,
     "log_nlwt": false,
