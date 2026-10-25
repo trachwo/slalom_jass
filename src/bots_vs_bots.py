@@ -156,13 +156,13 @@ def main():
         print("----------------------------------------------------------------"
               "--------------")
     for i in range(4):
-        print(f"Player{i+1}: {total[i]:>20} {int(total[i]/args.num_games):>3}")
+        print(f"Player{i+1}: {total[i]:>20} {total[i]/args.num_games:.2f}")
     print()
     print(f"Player1 + Player3: {total[0] + total[2]:>10}"
-          f" {int((total[0] + total[2])/args.num_games):>3}")
+          f" {(total[0] + total[2])/args.num_games:.2f}")
 
     print(f"Player2 + Player4: {total[1] + total[3]:>10}"
-          f" {int((total[1] + total[3])/args.num_games):>3}")
+          f" {(total[1] + total[3])/args.num_games:.2f}")
 
     print("===================================================================="
           "==========")
