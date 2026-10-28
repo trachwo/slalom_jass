@@ -108,7 +108,7 @@ To verify the installation, go to the 'slalom_jass/src' directory and run a
 short test:
 
     $ cd my_path/slalom_jass/src
-    $ python3 bots_vs_bots --bot13 simple --bot24 random -n 5
+    $ python3 bots_vs_bots.py --bot13 simple --bot24 random -n 5
 
 You should immediatly see something similar to the output below:
 ```
@@ -474,7 +474,7 @@ MCTS for a 4-player game with imperfect information:
 If you want to play against one type of bot yourself.
 
     $ cd my_path/slalom_jass/src
-    $ python3 human_vs_bots -h
+    $ python3 human_vs_bots.py -h
 ```
     usage: human_vs_bots.py [-h] --bots BOTS [--first {1,2,3,4}] [--scenario SCENARIO]
 
@@ -490,7 +490,7 @@ If you want to play against one type of bot yourself.
 E.g. play against **ismcts** and Player1 plays first (default):
 
     $ cd my_path/slalom_jass/src
-    $ python3 human_vs_bots --bots ismcts
+    $ python3 human_vs_bots.py --bots ismcts
 
 ```
 ------------------------------------------------------------------------------
