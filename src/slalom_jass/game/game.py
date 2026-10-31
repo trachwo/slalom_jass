@@ -656,16 +656,26 @@ class GameState:
 
         return score
 
-    def print_state(self):
+    def print_state(self, show=-1):
         """
         Show game state.
+
+        Args:
+            show (int): <0 => show all cards.
+                        0, 1, 2, 3 => show only this player's cards.
         """
         for i, player in enumerate(self.players):
             if i == self.next_player:
                 prefix = '* '
             else:
                 prefix = '  '
-            print(f"{prefix} {player.name}: {player.show_hand()}")
+            if show < 0 or show == i:
+                # show player's cards
+                print(f"{prefix} {player.name}: {player.show_hand(False)}")
+            else:
+                # hide player's cards
+                print(f"{prefix} {player.name}: {player.show_hand(True)}")
+
 
 
     def clone(self):

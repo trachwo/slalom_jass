@@ -64,7 +64,8 @@ def load_agent(filename):
     return agent
 
 
-def simulate_game(agent1, agent2, agent3, agent4, dealer=3, scenario=None):
+def simulate_game(agent1, agent2, agent3, agent4, dealer=3, visibility=-1,
+                  scenario=None):
     """
     Let 4 agents play a single round of Slalom-Jass against each other.
 
@@ -74,6 +75,9 @@ def simulate_game(agent1, agent2, agent3, agent4, dealer=3, scenario=None):
         agent3 (Agent):     bot playing Player3.
         agent4 (Agent):     bot playing Player4.
         first (int):        first player.
+        visibility (int):   -1 => cards of all players are visible.
+                            0, 1, 2, 3 => cards of this player are visible.
+        scenario (Scenario):    scenario loaded from file.
 
     Returns:
         tuple:     points per agent.
@@ -93,7 +97,7 @@ def simulate_game(agent1, agent2, agent3, agent4, dealer=3, scenario=None):
     print("-----------------------------------------------------------"
           "-------------------")
     # print game state => player hands
-    game.print_state()
+    game.print_state(visibility)
 
     # play 9 tricks of one round.
     while not game.is_over():
@@ -108,7 +112,7 @@ def simulate_game(agent1, agent2, agent3, agent4, dealer=3, scenario=None):
                 print("--------------------------------------------------------"
                       "----------------------")
             # print game state before each player selects a card
-            game.print_state()
+            game.print_state(visibility)
 
         # ask next player's agent to select a play (declaration or card)
         play = agent_map[game.next_player].select_play(game)
@@ -160,6 +164,8 @@ def main():
     parser.add_argument('--first', '-f', default=1, type=int,
                         choices={1, 2, 3, 4},
                         help="Set starting player (1-4).")
+    parser.add_argument('--cheat', '-c', action='store_true',
+                        help="show cards of all players.")
     parser.add_argument('--scenario', '-s', default=None,
                         help="load scenario file.")
     args = parser.parse_args()
@@ -174,6 +180,12 @@ def main():
     # e.g. Player1 (game.players[0]) shall play first
     #      => Player4 (game.players[3]) must be the dealer.
     dealer = (args.first + 2) % 4
+    
+    # only cards of Player1 (human) are visible.
+    visibility = 0
+    if args.cheat:
+        # cards of all players are visible.
+        visibility = -1
 
     if args.scenario is not None:
         # add extension '.cs' to scenario-name
@@ -191,7 +203,7 @@ def main():
         scenario = None
 
     # play 1 game
-    simulate_game(agent1, agent2, agent3, agent4, dealer, scenario)
+    simulate_game(agent1, agent2, agent3, agent4, dealer, visibility, scenario)
 
 
 if __name__ == '__main__':

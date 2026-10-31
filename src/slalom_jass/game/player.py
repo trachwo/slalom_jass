@@ -53,13 +53,20 @@ class Player:
         self.hand = sorted(self.hand, key=lambda x: (SUIT_ORDER.index(x.suit),
                                                      RANK_ORDER.index(x.rank)))
 
-    def show_hand(self):
+    def show_hand(self, hide=False):
         """
         Show hand cards.
+
+        Args:
+            hide (bool):    True => hide cards.
 
         Returns:
             str:    string of hand cards.
         """
+        if hide:
+            # display hand cards as 'XX XX ...'
+            return len(self.hand) * 'XX  '
+
         hand_str = [f"{self.hand[i]}" for i in range(len(self.hand))]
         return '  '.join(hand_str)
 

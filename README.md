@@ -483,14 +483,15 @@ If you want to play against one type of bot yourself.
       --bots BOTS
       --first {1,2,3,4}, -f {1,2,3,4}
                             Set starting player (1-4).
+      --cheat, -c           show cards of all players.
       --scenario SCENARIO, -s SCENARIO
                             load scenario file.
 ```
 
-E.g. play against **ismcts** and Player1 plays first (default):
+E.g. play against **ismcts** and Player1 plays first (default), show all cards:
 
     $ cd my_path/slalom_jass/src
-    $ python3 human_vs_bots.py --bots ismcts
+    $ python3 human_vs_bots.py --bots ismcts --cheat
 
 ```
 ------------------------------------------------------------------------------
@@ -534,7 +535,7 @@ Trick 1: Obenabe
 ```
 
 E.g. play against **cheater**, Player3 plays first, and the card distribution
-is loaded from **scenario_2.cs**:
+is loaded from **scenario_2.cs**, only human player's cards are disclosed:
 
     $ cd my_path/slalom_jass/src
     $ python3 human_vs_bots.py --bot cheater --first 3 --scenario scenario_2
@@ -544,9 +545,9 @@ is loaded from **scenario_2.cs**:
 Declarations
 ------------------------------------------------------------------------------
    Player1: 7♣  9♣  8♢  J♢  7♡  10♡  8♠  J♠  K♠
-   Player2: 9♢  9♠  6♡  K♡  A♢  7♠  10♢  6♢  6♠
-*  Player3: J♡  7♢  A♣  Q♡  A♡  A♠  J♣  10♠  9♡
-   Player4: Q♠  Q♣  6♣  K♣  Q♢  K♢  8♡  10♣  8♣
+   Player2: XX  XX  XX  XX  XX  XX  XX  XX  XX
+*  Player3: XX  XX  XX  XX  XX  XX  XX  XX  XX
+   Player4: XX  XX  XX  XX  XX  XX  XX  XX  XX
    Player3: Schiebe
    Player4: Undeufe
 
@@ -554,15 +555,15 @@ Declarations
 Trick 1: Undeufe
 ------------------------------------------------------------------------------
    Player1: 7♣  9♣  8♢  J♢  7♡  10♡  8♠  J♠  K♠
-   Player2: 9♢  9♠  6♡  K♡  A♢  7♠  10♢  6♢  6♠
-   Player3: J♡  7♢  A♣  Q♡  A♡  A♠  J♣  10♠  9♡
-*  Player4: Q♠  Q♣  6♣  K♣  Q♢  K♢  8♡  10♣  8♣
+   Player2: XX  XX  XX  XX  XX  XX  XX  XX  XX
+   Player3: XX  XX  XX  XX  XX  XX  XX  XX  XX
+*  Player4: XX  XX  XX  XX  XX  XX  XX  XX  XX
    Trick:   Q♢
 
 *  Player1: 7♣  9♣  8♢  J♢  7♡  10♡  8♠  J♠  K♠
-   Player2: 9♢  9♠  6♡  K♡  A♢  7♠  10♢  6♢  6♠
-   Player3: J♡  7♢  A♣  Q♡  A♡  A♠  J♣  10♠  9♡
-   Player4: Q♠  Q♣  6♣  K♣  K♢  8♡  10♣  8♣
+   Player2: XX  XX  XX  XX  XX  XX  XX  XX  XX
+   Player3: XX  XX  XX  XX  XX  XX  XX  XX  XX
+   Player4: XX  XX  XX  XX  XX  XX  XX  XX
    0:8♢  1:J♢ ? 
 ```
 
