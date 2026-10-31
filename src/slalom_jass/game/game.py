@@ -867,15 +867,17 @@ def simulate_game(agent1, agent2, agent3, agent4, dealer=3, scenario=None,
             name = game.players[game.next_player].name
             if game.tricks < 0:
                 # declaration phase
-                if game.turns == 1:
-                    print("   --------")    # 1st player to declare
-                print(f"   {name}: {legal_plays_str:<48} => ", end='')
+#                if game.turns == 1:
+#                    print("   --------")    # 1st player to declare
+                print(f"   {name}: {legal_plays_str:<40} => ", end='')
             else:
                 if game.turns == 0:
-                    print("   --------")    # 1st player to play card
+                    print("\n   -----------")    # 1st player to play card
                     direction = '\u2193' if game.higher_card_wins() else '\u2191'
-                    print(f"   Trick {game.tricks + 1}: {direction}")
-                print(f"   {name}: {legal_plays_str:<48}"
+                    print(f"   Trick {game.tricks + 1}: {direction}\n")
+                    game.print_state()
+                    print()
+                print(f"   {name}: {legal_plays_str:<40}"
                       f" => ", end='')
             if len(game.table) == 0:
                 # 1st card

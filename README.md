@@ -600,85 +600,146 @@ first, and we want to see detailed output:
 ```
       1/1 
 ------------------------------------------------------------------------------
-   Player1: 6♣  J♣  Q♣  7♢  8♢  7♡  6♠  8♠  10♠
-   Player2: 7♣  10♣  Q♢  K♢  9♡  A♡  7♠  J♠  A♠
-   Player3: K♣  A♣  6♢  9♢  J♢  J♡  Q♡  K♡  K♠
-*  Player4: 8♣  9♣  10♢  A♢  6♡  8♡  10♡  9♠  Q♠
+   Player1: 7♣  6♡  7♡  10♡  Q♡  A♡  7♠  8♠  Q♠
+   Player2: 6♣  10♣  J♣  A♣  7♢  Q♢  A♢  9♠  K♠
+   Player3: 8♣  K♣  6♢  J♢  K♢  J♡  K♡  10♠  J♠
+*  Player4: 9♣  Q♣  8♢  9♢  10♢  8♡  9♡  6♠  A♠
 
+   Player4: Schiebe  Obenabe  Undeufe                => Schiebe
+   Player1: Schiebe  Obenabe  Undeufe                => Schiebe
+   Player2: Schiebe  Obenabe  Undeufe                => Obenabe
+
+   -----------
+   Trick 1: ↓
+
+   Player1: 7♣  6♡  7♡  10♡  Q♡  A♡  7♠  8♠  Q♠
+*  Player2: 6♣  10♣  J♣  A♣  7♢  Q♢  A♢  9♠  K♠
+   Player3: 8♣  K♣  6♢  J♢  K♢  J♡  K♡  10♠  J♠
+   Player4: 9♣  Q♣  8♢  9♢  10♢  8♡  9♡  6♠  A♠
+
+   Player2: 6♣  10♣  J♣  A♣  7♢  Q♢  A♢  9♠  K♠      => A♢
+   Player3: 6♢  J♢  K♢                               => A♢  J♢
+   Player4: 8♢  9♢  10♢                              => A♢  J♢  10♢
+   Player1: 7♣  6♡  7♡  10♡  Q♡  A♡  7♠  8♠  Q♠      => A♢  J♢  10♢  7♠
+
+   -----------
+   Trick 2: ↑
+
+   Player1: 7♣  6♡  7♡  10♡  Q♡  A♡  8♠  Q♠
+*  Player2: 6♣  10♣  J♣  A♣  7♢  Q♢  9♠  K♠
+   Player3: 8♣  K♣  6♢  K♢  J♡  K♡  10♠  J♠
+   Player4: 9♣  Q♣  8♢  9♢  8♡  9♡  6♠  A♠
+
+   Player2: 6♣  10♣  J♣  A♣  7♢  Q♢  9♠  K♠          => 6♣
+   Player3: 8♣  K♣                                   => 6♣  K♣
+   Player4: 9♣  Q♣                                   => 6♣  K♣  Q♣
+   Player1: 7♣                                       => 6♣  K♣  Q♣  7♣
+
+   -----------
+   Trick 3: ↓
+
+   Player1: 6♡  7♡  10♡  Q♡  A♡  8♠  Q♠
+*  Player2: 10♣  J♣  A♣  7♢  Q♢  9♠  K♠
+   Player3: 8♣  6♢  K♢  J♡  K♡  10♠  J♠
+   Player4: 9♣  8♢  9♢  8♡  9♡  6♠  A♠
+
+   Player2: 10♣  J♣  A♣  7♢  Q♢  9♠  K♠              => A♣
+   Player3: 8♣                                       => A♣  8♣
+   Player4: 9♣                                       => A♣  8♣  9♣
+   Player1: 6♡  7♡  10♡  Q♡  A♡  8♠  Q♠              => A♣  8♣  9♣  7♡
+
+   -----------
+   Trick 4: ↑
+
+   Player1: 6♡  10♡  Q♡  A♡  8♠  Q♠
+*  Player2: 10♣  J♣  7♢  Q♢  9♠  K♠
+   Player3: 6♢  K♢  J♡  K♡  10♠  J♠
+   Player4: 8♢  9♢  8♡  9♡  6♠  A♠
+
+   Player2: 10♣  J♣  7♢  Q♢  9♠  K♠                  => 10♣
+   Player3: 6♢  K♢  J♡  K♡  10♠  J♠                  => 10♣  J♠
+   Player4: 8♢  9♢  8♡  9♡  6♠  A♠                   => 10♣  J♠  8♡
+   Player1: 6♡  10♡  Q♡  A♡  8♠  Q♠                  => 10♣  J♠  8♡  8♠
+
+   -----------
+   Trick 5: ↓
+
+   Player1: 6♡  10♡  Q♡  A♡  Q♠
+*  Player2: J♣  7♢  Q♢  9♠  K♠
+   Player3: 6♢  K♢  J♡  K♡  10♠
+   Player4: 8♢  9♢  9♡  6♠  A♠
+
+   Player2: J♣  7♢  Q♢  9♠  K♠                       => J♣
+   Player3: 6♢  K♢  J♡  K♡  10♠                      => J♣  J♡
+   Player4: 8♢  9♢  9♡  6♠  A♠                       => J♣  J♡  8♢
+   Player1: 6♡  10♡  Q♡  A♡  Q♠                      => J♣  J♡  8♢  10♡
+
+   -----------
+   Trick 6: ↑
+
+   Player1: 6♡  Q♡  A♡  Q♠
+*  Player2: 7♢  Q♢  9♠  K♠
+   Player3: 6♢  K♢  K♡  10♠
+   Player4: 9♢  9♡  6♠  A♠
+
+   Player2: 7♢  Q♢  9♠  K♠                           => 7♢
+   Player3: 6♢  K♢                                   => 7♢  6♢
+   Player4: 9♢                                       => 7♢  6♢  9♢
+   Player1: 6♡  Q♡  A♡  Q♠                           => 7♢  6♢  9♢  Q♡
+
+   -----------
+   Trick 7: ↓
+
+   Player1: 6♡  A♡  Q♠
+   Player2: Q♢  9♠  K♠
+*  Player3: K♢  K♡  10♠
+   Player4: 9♡  6♠  A♠
+
+   Player3: K♢  K♡  10♠                              => K♢
+   Player4: 9♡  6♠  A♠                               => K♢  9♡
+   Player1: 6♡  A♡  Q♠                               => K♢  9♡  Q♠
+   Player2: Q♢                                       => K♢  9♡  Q♠  Q♢
+
+   -----------
+   Trick 8: ↑
+
+   Player1: 6♡  A♡
+   Player2: 9♠  K♠
+*  Player3: K♡  10♠
+   Player4: 6♠  A♠
+
+   Player3: K♡  10♠                                  => K♡
+   Player4: 6♠  A♠                                   => K♡  A♠
+   Player1: 6♡  A♡                                   => K♡  A♠  6♡
+   Player2: 9♠  K♠                                   => K♡  A♠  6♡  9♠
+
+   -----------
+   Trick 9: ↓
+
+*  Player1: A♡
+   Player2: K♠
+   Player3: 10♠
+   Player4: 6♠
+
+   Player1: A♡                                       => A♡
+   Player2: K♠                                       => A♡  K♠
+   Player3: 10♠                                      => A♡  K♠  10♠
+   Player4: 6♠                                       => A♡  K♠  10♠  6♠
+-----------------------------------------------------------------------------
+   Obenabe:
    --------
-   Player4: Schiebe  Obenabe  Undeufe                        => Schiebe
-   Player1: Schiebe  Obenabe  Undeufe                        => Schiebe
-   Player2: Schiebe  Obenabe  Undeufe                        => Schiebe
-   Player3: Schiebe  Obenabe  Undeufe                        => Undeufe
-   --------
-   Trick 1: ↑
-   Player3: K♣  A♣  6♢  9♢  J♢  J♡  Q♡  K♡  K♠               => 6♢
-   Player4: 10♢  A♢                                          => 6♢  A♢
-   Player1: 7♢  8♢                                           => 6♢  A♢  8♢
-   Player2: Q♢  K♢                                           => 6♢  A♢  8♢  Q♢
-   --------
-   Trick 2: ↓
-   Player3: K♣  A♣  9♢  J♢  J♡  Q♡  K♡  K♠                   => Q♡
-   Player4: 6♡  8♡  10♡                                      => Q♡  6♡
-   Player1: 7♡                                               => Q♡  6♡  7♡
-   Player2: 9♡  A♡                                           => Q♡  6♡  7♡  A♡
-   --------
-   Trick 3: ↑
-   Player2: 7♣  10♣  K♢  9♡  7♠  J♠  A♠                      => 7♣
-   Player3: K♣  A♣                                           => 7♣  K♣
-   Player4: 8♣  9♣                                           => 7♣  K♣  9♣
-   Player1: 6♣  J♣  Q♣                                       => 7♣  K♣  9♣  Q♣
-   --------
-   Trick 4: ↓
-   Player2: 10♣  K♢  9♡  7♠  J♠  A♠                          => K♢
-   Player3: 9♢  J♢                                           => K♢  J♢
-   Player4: 10♢                                              => K♢  J♢  10♢
-   Player1: 7♢                                               => K♢  J♢  10♢  7♢
-   --------
-   Trick 5: ↑
-   Player2: 10♣  9♡  7♠  J♠  A♠                              => 7♠
-   Player3: K♠                                               => 7♠  K♠
-   Player4: 9♠  Q♠                                           => 7♠  K♠  9♠
-   Player1: 6♠  8♠  10♠                                      => 7♠  K♠  9♠  6♠
-   --------
-   Trick 6: ↓
-   Player1: 6♣  J♣  8♠  10♠                                  => 6♣
-   Player2: 10♣                                              => 6♣  10♣
-   Player3: A♣                                               => 6♣  10♣  A♣
-   Player4: 8♣                                               => 6♣  10♣  A♣  8♣
-   --------
-   Trick 7: ↑
-   Player3: 9♢  J♡  K♡                                       => 9♢
-   Player4: 8♡  10♡  Q♠                                      => 9♢  Q♠
-   Player1: J♣  8♠  10♠                                      => 9♢  Q♠  10♠
-   Player2: 9♡  J♠  A♠                                       => 9♢  Q♠  10♠  9♡
-   --------
-   Trick 8: ↓
-   Player3: J♡  K♡                                           => K♡
-   Player4: 8♡  10♡                                          => K♡  8♡
-   Player1: J♣  8♠                                           => K♡  8♡  J♣
-   Player2: J♠  A♠                                           => K♡  8♡  J♣  J♠
-   --------
-   Trick 9: ↑
-   Player3: J♡                                               => J♡
-   Player4: 10♡                                              => J♡  10♡
-   Player1: 8♠                                               => J♡  10♡  8♠
-   Player2: A♠                                               => J♡  10♡  8♠  A♠
--------------------------------------------------------------------------------
-   Undeufe:
-   --------
-   Player1:  15 - 7♠ K♠ 9♠ 6♠
-   Player2:  37 - Q♡ 6♡ 7♡ A♡  7♣ K♣ 9♣ Q♣  K♢ J♢ 10♢ 7♢
-   Player3:  80 - 6♢ A♢ 8♢ Q♢  6♣ 10♣ A♣ 8♣  9♢ Q♠ 10♠ 9♡  K♡ 8♡ J♣ J♠
-   Player4:  25 - J♡ 10♡ 8♠ A♠  + 5
+   Player1:  45 - K♡ A♠ 6♡ 9♠  A♡ K♠ 10♠ 6♠  + 5
+   Player2:  99 - A♢ J♢ 10♢ 7♠  6♣ K♣ Q♣ 7♣  A♣ 8♣ 9♣ 7♡  10♣ J♠ 8♡ 8♠  J♣ J♡ 8♢ 10♡
+   Player3:  13 - 7♢ 6♢ 9♢ Q♡  K♢ 9♡ Q♠ Q♢
+   Player4:   0 - 
 ------------------------------------------------------------------------------
-Player1:                   15  15
-Player2:                   37  37
-Player3:                   80  80
-Player4:                   25  25
+Player1:                   45   45.0
+Player2:                   99   99.0
+Player3:                   13   13.0
+Player4:                    0    0.0
 
-Player1 + Player3:         95  95
-Player2 + Player4:         62  62
+Player1 + Player3:         58   58.0
+Player2 + Player4:         99   99.0
 ==============================================================================
 ```
 

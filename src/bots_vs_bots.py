@@ -67,7 +67,9 @@ def load_agent(filename):
 
 def main():
     """
-    Let 4 agents play against itself.
+    Let 2 agents play against 2 agents.
+
+    Partners (P1/P3, P2/P4) have the same type.
 
     Agent types and parameters are loaded from json-files.
     """
@@ -137,15 +139,15 @@ def main():
 
         # calculate current total and average
         total = [total[x] + points[x] for x in range(len(total))]
-        avg_13 = int((total[0] + total[2]) / (i + 1))
-        avg_24 = int((total[1] + total[3]) / (i + 1))
+        avg_13 = (total[0] + total[2]) / (i + 1)
+        avg_24 = (total[1] + total[3]) / (i + 1)
 
         if args.verbose:
             print("------------------------------------------------------------"
                   "------------------")
         else:
             print(f"| {points[0]:>3} | {points[1]:>3} | {points[2]:>3} |"
-                  f" {points[3]:>3} | {avg_13:>4}  | {avg_24:>4}  |"
+                  f" {points[3]:>3} | {avg_13:5.1f} | {avg_24:5.1f} |"
                   f" {time.time() - start_time:.1f}s")
 
         # next dealer
@@ -156,13 +158,13 @@ def main():
         print("----------------------------------------------------------------"
               "--------------")
     for i in range(4):
-        print(f"Player{i+1}: {total[i]:>20} {total[i]/args.num_games:.2f}")
+        print(f"Player{i+1}: {total[i]:>20} {total[i]/args.num_games:6.1f}")
     print()
     print(f"Player1 + Player3: {total[0] + total[2]:>10}"
-          f" {(total[0] + total[2])/args.num_games:.2f}")
+          f" {(total[0] + total[2])/args.num_games:6.1f}")
 
     print(f"Player2 + Player4: {total[1] + total[3]:>10}"
-          f" {(total[1] + total[3])/args.num_games:.2f}")
+          f" {(total[1] + total[3])/args.num_games:6.1f}")
 
     print("===================================================================="
           "==========")
