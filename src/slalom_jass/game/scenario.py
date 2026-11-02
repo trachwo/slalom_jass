@@ -93,6 +93,11 @@ class Scenario():
             scenario_reader = csv.reader(fp, delimiter=',')
             for row in scenario_reader:
                 line_num = scenario_reader.line_num
+
+                # skip empty lines
+                if len(row) == 0:
+                    continue
+
                 # remove leading/trailing whitespace from fields
                 row = [x.strip() for x in row]
 
