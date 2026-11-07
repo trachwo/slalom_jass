@@ -656,6 +656,31 @@ class GameState:
 
         return score
 
+    def log_state(self, show=-1):
+        """
+        Create game state string.
+
+        Args:
+            show (int): <0 => show all cards.
+                        0, 1, 2, 3 => show only this player's cards.
+
+        Returns:
+            str:    string with current game state.
+        """
+        log = []
+        for i, player in enumerate(self.players):
+            if i == self.next_player:
+                prefix = '* '
+            else:
+                prefix = '  '
+            if show < 0 or show == i:
+                # show player's cards
+                log.append(f"{prefix} {player.name}: {player.show_hand(False)}")
+            else:
+                # hide player's cards
+                log.append(f"{prefix} {player.name}: {player.show_hand(True)}")
+        return log
+
     def print_state(self, show=-1):
         """
         Show game state.
@@ -664,19 +689,9 @@ class GameState:
             show (int): <0 => show all cards.
                         0, 1, 2, 3 => show only this player's cards.
         """
-        for i, player in enumerate(self.players):
-            if i == self.next_player:
-                prefix = '* '
-            else:
-                prefix = '  '
-            if show < 0 or show == i:
-                # show player's cards
-                print(f"{prefix} {player.name}: {player.show_hand(False)}")
-            else:
-                # hide player's cards
-                print(f"{prefix} {player.name}: {player.show_hand(True)}")
-
-
+        log = self.log_state(show)
+        for line in log:
+            print(line)
 
     def clone(self):
         """
@@ -854,6 +869,8 @@ def simulate_game(agent1, agent2, agent3, agent4, dealer=3, scenario=None,
     Returns:
         tuple:     points per agent.
     """
+    log = []    # game log
+
     # map player index to agent
     agent_map = {0: agent1, 1: agent2, 2: agent3, 3: agent4}
 
