@@ -87,6 +87,8 @@ def main():
                         help="Set starting player (1-4).")
     parser.add_argument('--scenario', '-s', default=None,
                         help="load scenario file.")
+    parser.add_argument('--logfile', '-l', default=None,
+                        help="save to log-file.")
     args = parser.parse_args()
 
     # create agents.
@@ -115,6 +117,14 @@ def main():
     else:
         scenario = None
 
+    if args.logfile is not None:
+        # add extension'.log' to logfile-name
+        log_file = args.logfile + '.log'
+        # set log-file path
+        logfile_path = Path(str(BASE_PATH / 'data' / 'logs' / log_file))
+    else:
+        logfile_path = None
+
     # reset total points
     total = [0 for _ in range(4)]
 
@@ -134,8 +144,13 @@ def main():
             print("\n----------------------------------------------------------"
                   "--------------------")
         # simulate 1 game
-        points = simulate_game(agent1, agent2, agent3, agent4, dealer, scenario,
-                               args.verbose)
+        points, log = simulate_game(agent1, agent2, agent3, agent4, dealer, scenario,
+                               args.verbose, True)
+        if logfile_path is not None:
+            with logfile_path.open("a", encoding='utf-8') as lfile:
+                lfile.write("\n--------------------------------------------------\n")
+                for line in log:
+                    lfile.write(line + '\n')
 
         # calculate current total and average
         total = [total[x] + points[x] for x in range(len(total))]
