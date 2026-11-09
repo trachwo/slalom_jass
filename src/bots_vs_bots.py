@@ -142,7 +142,7 @@ def main():
     if logfile_path is not None:
         with logfile_path.open('w', encoding='utf-8') as lfile:
             lfile.write(
-                f"--------------------------------------------------\n"
+                f"-----------------------------------------------------\n"
                 f"Scenario: "
                 f"{args.scenario if args.scenario is not None else '---'}\n"
                 f"Bots P1/P3: {args.bot13}\n"
