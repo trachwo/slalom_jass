@@ -4,6 +4,7 @@ Let 1 bot play a round of Slalom-Jass against 3 other bots.
 from pathlib import Path
 import argparse
 import time
+import random
 import json
 from slalom_jass.agents import HumanAgent, RandomBot, SimpleBot, MCTSCheater,\
      ISMCTSAgent
@@ -88,8 +89,11 @@ def main():
     parser.add_argument('--scenario', '-s', default=None,
                         help="load scenario file.")
     parser.add_argument('--logfile', '-l', default=None,
-                        help="save to log-file.")
+                        help="create log-file.")
+    parser.add_argument('--seed', type=int, default=None,
+                        help="Seed random generator.")
     args = parser.parse_args()
+
 
     # create agents.
     agent1 = load_agent(args.bot13)
@@ -135,7 +139,22 @@ def main():
         print("    Games |  P1 |  P2 |  P3 |  P4 | P1+P3 | P2+P4 | Time")
         print("----------+-----+-----+-----+-----+-------+-------+-------")
 
+    if logfile_path is not None:
+        with logfile_path.open('w', encoding='utf-8') as lfile:
+            lfile.write(
+                f"--------------------------------------------------\n"
+                f"Scenario: "
+                f"{args.scenario if args.scenario is not None else '---'}\n"
+                f"Bots P1/P3: {args.bot13}\n"
+                f"Bots P2/P4: {args.bot24}\n"
+                f"Base Seed: {args.seed if args.seed is not None else '---'}\n"
+                )
+
     for i in range(args.num_games):
+        if args.seed is not None:
+            # seed random generator => reproducible card distribution
+            random.seed(args.seed + i)
+
         start_time = time.time()
         print(f"{str(i + 1) + '/' + str(args.num_games):>9} ",
                end='')
@@ -147,9 +166,13 @@ def main():
         points, log = simulate_game(agent1, agent2, agent3, agent4, dealer, scenario,
                                args.verbose, True)
         if logfile_path is not None:
-            with logfile_path.open("a", encoding='utf-8') as lfile:
-                lfile.write("\n--------------------------------------------------\n")
-                for line in log:
+            with logfile_path.open('a', encoding='utf-8') as lfile:
+                lfile.write("-----------------------------------------------------\n")
+                lfile.write(f"   {str(i + 1) + '/' + str(args.num_games)}   "
+                            f"{log[0]}   P1/P3:{points[0] + points[2]}   "
+                            f"P2/P4: {points[1] + points[3]}\n")
+                lfile.write("-----------------------------------------------------\n")
+                for line in log[1:]:
                     lfile.write(line + '\n')
 
         # calculate current total and average
