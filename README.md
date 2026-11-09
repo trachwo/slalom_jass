@@ -204,10 +204,14 @@ After installation, you should see the following file structure:
 >                        |       +--- ismcts.json
 >                        |
 >                        +--- scenarios
->                                 |
->                                 +--- scenario_1.cs
->                                 |
->                                 +--- scenario_2.cs
+>                        |        |
+>                        |        +--- scenario_1.cs
+>                        |        |
+>                        |        +--- scenario_2.cs
+>                        |
+>                        +--- logs
+>                               |
+>                               +--- my_log.log
 
 **README.md**: This file.
 
@@ -249,6 +253,9 @@ After installation, you should see the following file structure:
 **src/data/scenarios**: Scenarios with preset player hands.
 - **scenario_1.cs**: Example for scenario, where all hands are specified.
 - **scenario_2.cs**: Example for scenario, where only one hand is specified.
+
+**src/data/logs**: Log-files recorded with bots_vs_bots.py.
+- **my_log.log**: Example of log-file.
 
 # Agents #
 
@@ -392,7 +399,14 @@ rollout has the following 4 phases:
    who selects a card in the root state wins a simulation, the win counter in
    the selected child is incremented, but the next child selected from there,
    corresponds to a play selected by the loser of the simulation and is
-   therefore not incremented).  
+   therefore not incremented)
+                else:
+                    # 2nd and 3rd player added a card
+                    log_str = log_str + f" {str(play)}"
+
+        # apply selected card to game state
+        game = game.apply_play(play)
+.  
    To adapt this for a **4-player game**, we backpropagate a list of rewards
    (0.0 - 1.0) per player and each passed node adds the reward for the player
    selecting a play in the parent state (node) to its reward statistics.
@@ -584,12 +598,16 @@ Let 2 bot-teams play against each other.
       --bot13 BOT13         type of Player1/Player3 bot.
       --bot24 BOT24         type of Player2/Player4 bot.
       --num-games NUM_GAMES, -n NUM_GAMES
-                        number of games played.
+                            number of games played.
       --verbose, -v         show played cards.
       --first {1,2,3,4}, -f {1,2,3,4}
                             Set starting player (1-4).
       --scenario SCENARIO, -s SCENARIO
                             load scenario file.
+      --logfile LOGFILE, -l LOGFILE
+                            create log-file.
+      --seed SEED           Seed random generator.
+
 ```
 
 E.g. let **ismcts** play **1** round against **simple**, **Player4** plays
@@ -746,34 +764,90 @@ Player2 + Player4:         99   99.0
 
 E.g. let **ismcts** play **10** rounds against **cheater**, **Player1** plays
 first (default), we only want to see statistics output (default), and the card
-distribution is loaded from **scenario_2.cs**:
+distribution is loaded from **scenario_2.cs**. Each game is logged to the
+log-file **my_log.log** and we **seed** the random generator in order to get
+reproducible results:
 
     $ cd my_path/slalom_jass/src
-    $ python3 bots_vs_bots.py --bot13 ismcts --bot24 cheater -n 10 --scenario scenario_2 
+    $ python3 bots_vs_bots.py --bot13 ismcts --bot24 cheater -n 10 --scenario scenario_2 --log my_log --seed 1234 
 
 ```
           |     |     |     |     |    Average    |
     Games |  P1 |  P2 |  P3 |  P4 | P1+P3 | P2+P4 | Time
 ----------+-----+-----+-----+-----+-------+-------+-------
-     1/10 |   0 |  96 |  20 |  41 |   20  |  137  | 27.9s
-     2/10 |   0 |  16 |  22 | 119 |   21  |  136  | 28.4s
-     3/10 |   0 |   0 | 136 |  21 |   59  |   97  | 28.5s
-     4/10 |   0 | 128 |   0 |  29 |   44  |  112  | 28.4s
-     5/10 |  11 |  53 |   0 |  93 |   37  |  119  | 29.7s
-     6/10 |   0 |  53 |   0 | 104 |   31  |  125  | 25.7s
-     7/10 |   0 |   0 | 137 |  20 |   46  |  110  | 29.7s
-     8/10 |   0 |  62 |   0 |  95 |   40  |  116  | 26.9s
-     9/10 |   0 |  42 |   0 | 115 |   36  |  120  | 31.3s
-    10/10 |   0 |  22 |  18 | 117 |   34  |  122  | 26.8s
+     1/10 |   0 |  52 |   0 | 105 |   0.0 | 157.0 | 37.1s
+     2/10 |   0 |  22 |  41 |  94 |  20.5 | 136.5 | 38.0s
+     3/10 |  27 | 107 |  23 |   0 |  30.3 | 126.7 | 36.7s
+     4/10 |  30 |  45 |   0 |  82 |  30.2 | 126.8 | 38.1s
+     5/10 |   0 |  87 |   0 |  70 |  24.2 | 132.8 | 41.9s
+     6/10 |   0 | 157 |   0 |   0 |  20.2 | 136.8 | 41.5s
+     7/10 |   3 |   0 |   0 | 154 |  17.7 | 139.3 | 49.5s
+     8/10 |   0 |  70 |  50 |  37 |  21.8 | 135.2 | 39.2s
+     9/10 |   0 |  80 |  22 |  55 |  21.8 | 135.2 | 41.9s
+    10/10 |  28 |  51 |  31 |  47 |  25.5 | 131.5 | 43.1s
 ------------------------------------------------------------------------------
-Player1:                   11   1
-Player2:                  472  47
-Player3:                  333  33
-Player4:                  754  75
+Player1:                   88    8.8
+Player2:                  671   67.1
+Player3:                  167   16.7
+Player4:                  644   64.4
 
-Player1 + Player3:        344  34
-Player2 + Player4:       1226 122
+Player1 + Player3:        255   25.5
+Player2 + Player4:       1315  131.5
 ==============================================================================
+```
+
+With the '--log' option a log-file has been written to 'slalom_jass/data/logs':
+
+    $ cd my_path/slalom_jass/src
+    $ less data/logs/my_log.log
+
+```
+-----------------------------------------------------
+Scenario: scenario_2
+Bots P1/P3: ismcts
+Bots P2/P4: cheater
+Base Seed: 1234
+-----------------------------------------------------
+   1/10   Player1: Undeufe   P1/P3:0   P2/P4: 157
+-----------------------------------------------------
+*  Player1: 7♣  9♣  8♢  J♢  7♡  10♡  8♠  J♠  K♠
+   Player2: 9♠  A♡  10♣  A♣  8♣  J♡  6♣  6♠  Q♠
+   Player3: 10♢  A♢  7♠  6♡  Q♢  10♠  Q♣  9♢  7♢
+   Player4: 8♡  6♢  K♡  K♢  K♣  9♡  A♠  J♣  Q♡
+   Trick1 ↑ Player1: K♠ 6♠ 7♠ A♠
+   Trick2 ↓ Player2: A♡ 6♡ 8♡ 7♡
+   Trick3 ↑ Player2: 6♣ Q♣ K♣ 9♣
+   Trick4 ↓ Player2: 10♣ Q♢ J♣ 7♣
+   Trick5 ↑ Player4: 6♢ J♢ 8♣ 9♢
+   Trick6 ↓ Player4: K♡ 10♡ J♡ 10♢
+   Trick7 ↑ Player4: Q♡ 8♢ Q♠ 7♢
+   Trick8 ↓ Player4: 9♡ J♠ 9♠ A♢
+   Trick9 ↑ Player4: K♢ 8♠ A♣ 10♠
+-----------------------------------------------------
+   2/10   Player2: Undeufe   P1/P3:41   P2/P4: 116
+-----------------------------------------------------
+   Player1: 7♣  9♣  8♢  J♢  7♡  10♡  8♠  J♠  K♠
+*  Player2: 6♠  K♢  9♡  J♡  6♡  Q♢  J♣  10♢  10♠
+   Player3: K♣  10♣  7♠  Q♠  K♡  A♢  Q♣  7♢  A♠
+   Player4: Q♡  A♣  9♠  8♣  6♣  A♡  6♢  8♡  9♢
+   Trick1 ↑ Player2: 6♠ Q♠ 9♠ 8♠
+   Trick2 ↓ Player2: K♢ A♢ 9♢ 8♢
+   Trick3 ↑ Player3: 7♠ 8♡ J♠ 10♠
+   Trick4 ↓ Player3: A♠ Q♡ K♠ J♡
+   Trick5 ↑ Player3: 7♢ 6♢ J♢ 10♢
+   Trick6 ↓ Player4: A♣ 7♣ J♣ Q♣
+   Trick7 ↑ Player4: 6♣ 9♣ Q♢ K♣
+   Trick8 ↓ Player4: A♡ 7♡ 9♡ K♡
+   Trick9 ↑ Player4: 8♣ 10♡ 6♡ 10♣
+-----------------------------------------------------
+   3/10   Player3: Obenabe   P1/P3:50   P2/P4: 107
+-----------------------------------------------------
+   Player1: 7♣  9♣  8♢  J♢  7♡  10♡  8♠  J♠  K♠
+   Player2: 9♡  6♡  7♠  A♠  10♠  6♢  8♡  9♢  Q♠
+*  Player3: 10♣  Q♢  7♢  A♣  8♣  A♡  Q♡  A♢  6♠
+   Player4: K♢  9♠  Q♣  J♡  J♣  K♡  6♣  K♣  10♢
+   Trick1 ↓ Player3: A♢ 10♢ J♢ 9♢
+   ...
 ```
 
 # Agent Configuration Files #
