@@ -264,6 +264,9 @@ class GameState:
             # to each player.
             self.deal_cards()
         else:
+            # we need a clone of the scenario, because distribute() changes
+            # the state (card distribution) of the scenario.
+            scenario = scenario.clone()
             # use card distribution specified in scenario.
             # => randomly distribute unspecified cards.
             scenario.distribute()
@@ -658,14 +661,14 @@ class GameState:
 
     def log_state(self, show=-1):
         """
-        Create game state string.
+        Create list of game state strings.
 
         Args:
             show (int): <0 => show all cards.
                         0, 1, 2, 3 => show only this player's cards.
 
         Returns:
-            str:    string with current game state.
+            list:    list of strings with current game state.
         """
         log = []
         for i, player in enumerate(self.players):
@@ -886,8 +889,9 @@ def simulate_game(agent1, agent2, agent3, agent4, dealer=3, scenario=None,
         print()
 
     if return_log:
-        log = game.log_state()
-        log.append('\n')
+        log = [""]  # create log with empty header line
+        # add 4 game state lines
+        log += (game.log_state())
 
     # play 9 tricks of one round.
     while not game.is_over():
@@ -919,9 +923,14 @@ def simulate_game(agent1, agent2, agent3, agent4, dealer=3, scenario=None,
                 print(f"{game.show_table_cards()}  {str(play)}")
 
         if return_log:
+            name = game.players[game.next_player].name
             # create 1 log-string per trick.
             if game.tricks >= 0:
                 if game.turns == 0:
+                    if game.tricks == 0:
+                        # add header line to log
+                        log[0] = (f"{name}: "
+                                  f"{'Obenabe' if game.obenabe else 'Undeufe'}")
                     # 1st player added a card
                     direction = '\u2193' if game.higher_card_wins() else '\u2191'
                     # Trick-Number, Direction, Leading Player, Cards in Trick 
