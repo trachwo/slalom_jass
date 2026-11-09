@@ -255,6 +255,18 @@ class Deck:
         """
         self.cards = [Card(Suit(c['suit']), Rank(c['rank'])) for c in state]
 
+    def clone(self):
+        """
+        Clone deck.
+
+        Returns:
+            Deck:   new Deck object with same cards.
+        """
+        new_deck = Deck()
+        new_deck.cards = self.cards[:]
+        return new_deck
+
+
 
 if __name__ == '__main__':
     # !!!NOTE!!!
