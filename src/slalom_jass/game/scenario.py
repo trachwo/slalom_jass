@@ -56,9 +56,8 @@ class Scenario():
         """
         self.scenario_path = scenario_path
         self.hands = {'P1': [], 'P2': [], 'P3': [], 'P4': []}
-        # create and shuffle deck of 36 cards ('2', '3', '4', and '5' removed)
+        # create deck of 36 cards ('2', '3', '4', and '5' removed)
         self.deck = Deck(remove=[Rank.TWO, Rank.THREE, Rank.FOUR, Rank.FIVE])
-        self.deck.shuffle_cards()
 
     def add_card_to_hand(self, player, card):
         """
@@ -135,16 +134,33 @@ class Scenario():
                                          f" card-suit!")
                     self.add_card_to_hand(row[0], card)
 
+    def clone(self):
+        """
+        Make a copy of the loaded scenario.
+
+        Returns:
+            Scenario:   copy of the loaded scenario.
+        """
+        new_scenario = Scenario(self.scenario_path)
+        new_scenario.deck = self.deck.clone()
+        for p, hand in self.hands.items():
+            new_scenario.hands[p] = hand[:]
+
+        return new_scenario
+
     def distribute(self):
         """
         Fill unspecified hands with remaining deck cards.
         """
-        for _, hand in self.hands.items():
+        # make sure remaining cards are distributed randomly.
+        self.deck.shuffle_cards()
+        for p, hand in self.hands.items():
             while len(hand) < 9:
                 # get card from top of deck
                 card = self.deck.deal_card()
                 # add it to this player's hand
                 hand.append(card)
+            self.hands[p] = hand[:]
 
     def sort_hands(self):
         """
