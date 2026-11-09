@@ -808,45 +808,45 @@ Bots P1/P3: ismcts
 Bots P2/P4: cheater
 Base Seed: 1234
 -----------------------------------------------------
-   1/10   Player1: Undeufe   P1/P3:0   P2/P4: 157
+   1/10   Player1: Undeufe   P1/P3:12   P2/P4: 145
 -----------------------------------------------------
 *  Player1: 7♣  9♣  8♢  J♢  7♡  10♡  8♠  J♠  K♠
-   Player2: 9♠  A♡  10♣  A♣  8♣  J♡  6♣  6♠  Q♠
-   Player3: 10♢  A♢  7♠  6♡  Q♢  10♠  Q♣  9♢  7♢
-   Player4: 8♡  6♢  K♡  K♢  K♣  9♡  A♠  J♣  Q♡
+   Player2: 6♣  8♣  10♣  A♣  J♡  A♡  6♠  9♠  Q♠
+   Player3: Q♣  7♢  9♢  10♢  Q♢  A♢  6♡  7♠  10♠
+   Player4: J♣  K♣  6♢  K♢  8♡  9♡  Q♡  K♡  A♠
    Trick1 ↑ Player1: K♠ 6♠ 7♠ A♠
    Trick2 ↓ Player2: A♡ 6♡ 8♡ 7♡
-   Trick3 ↑ Player2: 6♣ Q♣ K♣ 9♣
-   Trick4 ↓ Player2: 10♣ Q♢ J♣ 7♣
-   Trick5 ↑ Player4: 6♢ J♢ 8♣ 9♢
-   Trick6 ↓ Player4: K♡ 10♡ J♡ 10♢
-   Trick7 ↑ Player4: Q♡ 8♢ Q♠ 7♢
-   Trick8 ↓ Player4: 9♡ J♠ 9♠ A♢
-   Trick9 ↑ Player4: K♢ 8♠ A♣ 10♠
+   Trick3 ↑ Player2: 6♣ Q♣ J♣ 9♣
+   Trick4 ↓ Player2: 8♣ 10♠ K♣ 7♣
+   Trick5 ↑ Player4: 9♡ 10♡ J♡ 9♢
+   Trick6 ↓ Player4: K♢ 8♢ 9♠ A♢
+   Trick7 ↑ Player3: 7♢ 6♢ J♢ Q♠
+   Trick8 ↓ Player4: K♡ 8♠ 10♣ 10♢
+   Trick9 ↑ Player4: Q♡ J♠ A♣ Q♢
 -----------------------------------------------------
-   2/10   Player2: Undeufe   P1/P3:41   P2/P4: 116
+   2/10   Player2: Undeufe   P1/P3:33   P2/P4: 124
 -----------------------------------------------------
    Player1: 7♣  9♣  8♢  J♢  7♡  10♡  8♠  J♠  K♠
-*  Player2: 6♠  K♢  9♡  J♡  6♡  Q♢  J♣  10♢  10♠
-   Player3: K♣  10♣  7♠  Q♠  K♡  A♢  Q♣  7♢  A♠
-   Player4: Q♡  A♣  9♠  8♣  6♣  A♡  6♢  8♡  9♢
+*  Player2: J♣  10♢  Q♢  K♢  6♡  9♡  J♡  6♠  10♠
+   Player3: 10♣  Q♣  K♣  7♢  A♢  K♡  7♠  Q♠  A♠
+   Player4: 6♣  8♣  A♣  6♢  9♢  8♡  Q♡  A♡  9♠
    Trick1 ↑ Player2: 6♠ Q♠ 9♠ 8♠
-   Trick2 ↓ Player2: K♢ A♢ 9♢ 8♢
-   Trick3 ↑ Player3: 7♠ 8♡ J♠ 10♠
-   Trick4 ↓ Player3: A♠ Q♡ K♠ J♡
-   Trick5 ↑ Player3: 7♢ 6♢ J♢ 10♢
-   Trick6 ↓ Player4: A♣ 7♣ J♣ Q♣
-   Trick7 ↑ Player4: 6♣ 9♣ Q♢ K♣
-   Trick8 ↓ Player4: A♡ 7♡ 9♡ K♡
-   Trick9 ↑ Player4: 8♣ 10♡ 6♡ 10♣
+   Trick2 ↓ Player2: Q♢ A♢ 9♢ 8♢
+   Trick3 ↑ Player3: 7♠ 8♡ K♠ 10♠
+   Trick4 ↓ Player3: K♡ A♡ 10♡ J♡
+   Trick5 ↑ Player4: 6♢ J♢ 10♢ 7♢
+   Trick6 ↓ Player4: A♣ 9♣ J♣ K♣
+   Trick7 ↑ Player4: Q♡ 7♡ 6♡ Q♣
+   Trick8 ↓ Player2: K♢ 10♣ 8♣ 7♣
+   Trick9 ↑ Player2: 9♡ A♠ 6♣ J♠
 -----------------------------------------------------
-   3/10   Player3: Obenabe   P1/P3:50   P2/P4: 107
+   3/10   Player4: Obenabe   P1/P3:0   P2/P4: 157
 -----------------------------------------------------
    Player1: 7♣  9♣  8♢  J♢  7♡  10♡  8♠  J♠  K♠
-   Player2: 9♡  6♡  7♠  A♠  10♠  6♢  8♡  9♢  Q♠
-*  Player3: 10♣  Q♢  7♢  A♣  8♣  A♡  Q♡  A♢  6♠
-   Player4: K♢  9♠  Q♣  J♡  J♣  K♡  6♣  K♣  10♢
-   Trick1 ↓ Player3: A♢ 10♢ J♢ 9♢
+   Player2: 6♢  9♢  6♡  8♡  9♡  7♠  10♠  Q♠  A♠
+*  Player3: 8♣  10♣  A♣  7♢  Q♢  A♢  Q♡  A♡  6♠
+   Player4: 6♣  J♣  Q♣  K♣  10♢  K♢  J♡  K♡  9♠
+   Trick1 ↓ Player4: 9♠ K♠ A♠ 6♠
    ...
 ```
 
