@@ -270,6 +270,7 @@ class GameState:
             # use card distribution specified in scenario.
             # => randomly distribute unspecified cards.
             scenario.distribute()
+            scenario.sort_hands()
             # set player hands according to scenario
             for i, player in enumerate(self.players):
                 player.hand = scenario.hands[f'P{i+1}']
