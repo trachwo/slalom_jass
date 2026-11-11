@@ -92,6 +92,8 @@ def main():
                         help="create log-file.")
     parser.add_argument('--seed', type=int, default=None,
                         help="Seed random generator.")
+    parser.add_argument('--fixed', action='store_true',
+                        help="Fixed first player")
     args = parser.parse_args()
 
 
@@ -189,7 +191,9 @@ def main():
                   f" {time.time() - start_time:.1f}s")
 
         # next dealer
-        dealer = (dealer + 1) % 4
+        if not args.fixed:
+            # new dealer and starting player (shift 1 to the right)  
+            dealer = (dealer + 1) % 4
 
     # print final score
     if not args.verbose:
