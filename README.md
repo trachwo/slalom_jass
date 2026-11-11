@@ -589,11 +589,12 @@ Let 2 bot-teams play against each other.
     $ python3 bots_vs_bots.py -h
 
 ```
-    usage: bots_vs_bots.py [-h] --bot13 BOT13 [--bot24 BOT24]
-                           [--num-games NUM_GAMES] [--verbose]
-                           [--first {1,2,3,4}] [--scenario SCENARIO]
-
-    options:
+   usage: bots_vs_bots.py [-h] --bot13 BOT13 [--bot24 BOT24]
+                          [--num-games NUM_GAMES] [--verbose]
+                          [--first {1,2,3,4}] [--scenario SCENARIO]
+                          [--logfile LOGFILE] [--seed SEED] [--fixed]
+                          [--declaration {obenabe,undeufe}]
+   options:
       -h, --help            show this help message and exit
       --bot13 BOT13         type of Player1/Player3 bot.
       --bot24 BOT24         type of Player2/Player4 bot.
