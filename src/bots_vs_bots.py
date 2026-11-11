@@ -95,7 +95,7 @@ def main():
     parser.add_argument('--fixed', '-x', action='store_true',
                         help="Fixed first player.")
     parser.add_argument('--declaration', '-d', default=None, type=str,
-                        choices={'Obenabe', 'Undeufe'},
+                        choices={'obenabe', 'undeufe'},
                         help="Select type of game.")
     args = parser.parse_args()
 
