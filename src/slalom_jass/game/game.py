@@ -868,7 +868,7 @@ class GameState:
 
 
 def simulate_game(agent1, agent2, agent3, agent4, dealer=3, scenario=None,
-                  verbose=False, return_log=False):
+                  verbose=False, return_log=False, declaration=None):
     """
     Let 4 agents play a single round of Slalom-Jass against each other.
 
@@ -881,6 +881,7 @@ def simulate_game(agent1, agent2, agent3, agent4, dealer=3, scenario=None,
         scenario (Scenario):    scenario loaded from CSV-file.
         verbose (bool):         True => show details.
         return_log (bool):      True => return list of log strings.
+        declaration (str):      None, 'Obenabe', or 'Undeufe'.
 
     Returns:
         tuple:     points per agent, list of log strings (or None).
@@ -894,7 +895,7 @@ def simulate_game(agent1, agent2, agent3, agent4, dealer=3, scenario=None,
     # with Player4 as dealer Player1 has to declare first.
     game = GameState.new_round(dealer)
     # deal cards and determine starting player
-    game.start_round(scenario)
+    game.start_round(scenario, declaration)
     if verbose:
         # print cards per player
         game.print_state()

@@ -92,8 +92,11 @@ def main():
                         help="create log-file.")
     parser.add_argument('--seed', type=int, default=None,
                         help="Seed random generator.")
-    parser.add_argument('--fixed', action='store_true',
-                        help="Fixed first player")
+    parser.add_argument('--fixed', '-x', action='store_true',
+                        help="Fixed first player.")
+    parser.add_argument('--declaration', '-d', default=None, type=str,
+                        choices={'Obenabe', 'Undeufe'},
+                        help="Select type of game.")
     args = parser.parse_args()
 
 
@@ -166,7 +169,7 @@ def main():
                   "--------------------")
         # simulate 1 game
         points, log = simulate_game(agent1, agent2, agent3, agent4, dealer, scenario,
-                               args.verbose, True)
+                               args.verbose, True, args.declaration)
         if logfile_path is not None:
             with logfile_path.open('a', encoding='utf-8') as lfile:
                 lfile.write("-----------------------------------------------------\n")
