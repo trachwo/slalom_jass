@@ -246,12 +246,18 @@ class GameState:
         return GameState(players, tricks, turns, table, next_player, obenabe,
                          info)
 
-    def start_round(self, scenario=None):
+    def start_round(self, scenario=None, declaration=None):
         """
         Deal cards and move to declaration phase.
 
+        If a scenario has been specified, use the card distribution from the
+        scenario. If 'Obenabe' or 'Undeufe' has been specified, skip the
+        declaration state, i.e. the player following the dealer plays 1st card
+        for 'Obenabe' or 'Undeufe' game. 
+
         Args:
             scenario (Scenario): card distribution loaded from scenario file.
+            declaration (str): 'None', 'Obenabe', or 'Undeufe'.
         """
         # game must be in initial state: tricks = -1, turns = 0
         if self.tricks != -1:
@@ -277,6 +283,11 @@ class GameState:
 
         self.next_player = (self.next_player + 1) % NOF_PLAYERS
         self.turns = 1      # next game state: tricks = -1, turns = 1
+
+        if declaration is not None:
+            self.obenabe = (declaration == 'Obenabe')
+            self.tricks = 0     # skip declaration phase
+            self.turns = 0      # next player plays 1st card of 1st trick
 
     def get_legal_declarations(self):
         """
