@@ -6,6 +6,9 @@ import argparse
 import time
 import random
 import json
+import openpyxl
+from openpyxl.styles import Font, Alignment
+
 from slalom_jass.agents import HumanAgent, RandomBot, SimpleBot, MCTSCheater,\
      ISMCTSAgent
 from slalom_jass.game import simulate_game
@@ -14,6 +17,131 @@ from slalom_jass.game.scenario import Scenario
 
 # absolute path to files used in this program
 BASE_PATH = Path(__file__).resolve().parent
+
+class ExcelReport():
+    """
+    Spreadsheet for game data.
+    """
+    def __init__(self, filename):
+        """
+        Initializer.
+
+        Args:
+            filename (str):     name of xlsx-file.
+        """
+        self.filename = filename
+
+        # try to load existing spreadsheet
+        try:
+            self.wb = openpyxl.load_workbook(filename)
+            sheet = self.wb.active
+
+        except FileNotFoundError:
+            # File doesn't exist => create new spreadsheet.
+            self.wb = openpyxl.Workbook()
+            sheet = self.wb.active
+            sheet.title = 'Slalom-Jass Report'
+
+            # create headers in row 1 and 2
+            sheet['A2'] = 'Seed'
+            sheet.merge_cells('B1:E1')
+            sheet['B1'] = 'Hands'
+            sheet['B2'] = 'Player 1'
+            sheet['C2'] = 'Player 2'
+            sheet['D2'] = 'Player 3'
+            sheet['E2'] = 'Player 4'
+            sheet['F2'] = 'Declaration'
+            sheet.merge_cells('G1:O1')
+            sheet['G1'] = 'Tricks'
+            sheet['G2'] = '1'
+            sheet['H2'] = '2'
+            sheet['I2'] = '3'
+            sheet['J2'] = '4'
+            sheet['K2'] = '5'
+            sheet['L2'] = '6'
+            sheet['M2'] = '7'
+            sheet['N2'] = '8'
+            sheet['O2'] = '9'
+            sheet.merge_cells('P1:U1')
+            sheet['P1'] = 'Scores'
+            sheet['P2'] = 'P1'
+            sheet['Q2'] = 'P2'
+            sheet['R2'] = 'P3'
+            sheet['S2'] = 'P4'
+            sheet['T2'] = 'P1+P3'
+            sheet['U2'] = 'P2+P4'
+
+            # change header font
+            header_font = Font(bold=True)
+            for row_of_cell_objects in sheet['A1:U2']:
+                for cell_obj in row_of_cell_objects:
+                    cell_obj.font = header_font
+                    cell_obj.alignment = Alignment(horizontal='center')
+
+            # change column dimensions
+            for col in ['B', 'C', 'D', 'E']:
+                sheet.column_dimensions[col].width = 27
+
+            sheet.column_dimensions['F'].width = 15
+
+            for col in ['G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O']:
+                sheet.column_dimensions[col].width = 15
+
+            # freeze top 2 rows (= header)
+            sheet.freeze_panes = 'A3'
+
+        self.row = sheet.max_row + 1    # next empty row in spreadsheet
+
+    def add_log(self, seed, log, points):
+        """
+        Add log of one game to the next row of the spreadsheet.
+
+        Args:
+            seed (int):     random generator seed for this round.
+            log (list):     list of log strings for 1 game.
+            points (list):  points won this round.
+        """
+        sheet = self.wb.active
+        row = self.row
+
+        if seed is not None:
+            sheet[f"A{row}"] = seed
+        sheet[f"B{row}"] = log[1][12:]
+        sheet[f"C{row}"] = log[2][12:]
+        sheet[f"D{row}"] = log[3][12:]
+        sheet[f"E{row}"] = log[4][12:]
+        sheet[f"F{row}"] = log[0][9:]
+        sheet[f"G{row}"] = f"{log[5][10]} P{log[5][18]}: {log[5][21:]}"
+        sheet[f"H{row}"] = f"{log[6][10]} P{log[6][18]}: {log[6][21:]}"
+        sheet[f"I{row}"] = f"{log[7][10]} P{log[7][18]}: {log[7][21:]}"
+        sheet[f"J{row}"] = f"{log[8][10]} P{log[8][18]}: {log[8][21:]}"
+        sheet[f"K{row}"] = f"{log[9][10]} P{log[9][18]}: {log[9][21:]}"
+        sheet[f"L{row}"] = f"{log[10][10]} P{log[10][18]}: {log[10][21:]}"
+        sheet[f"M{row}"] = f"{log[11][10]} P{log[11][18]}: {log[11][21:]}"
+        sheet[f"N{row}"] = f"{log[12][10]} P{log[12][18]}: {log[12][21:]}"
+        sheet[f"O{row}"] = f"{log[13][10]} P{log[13][18]}: {log[13][21:]}"
+        sheet[f"P{row}"] = points[0]
+        sheet[f"Q{row}"] = points[1]
+        sheet[f"R{row}"] = points[2]
+        sheet[f"S{row}"] = points[3]
+        sheet[f"T{row}"] = points[0] + points[2]
+        sheet[f"U{row}"] = points[1] + points[3]
+
+        for row_of_cell_objects in sheet[f'A{row}:U{row}']:
+             for cell_obj in row_of_cell_objects:
+                cell_obj.font = Font(size=8)
+                if cell_obj.column in [16, 17, 18, 19, 20, 21]:
+                    cell_obj.alignment = Alignment(horizontal='right')
+                if cell_obj.column in [1, 2, 3, 4, 5, 6]:
+                    cell_obj.alignment = Alignment(horizontal='center')
+
+        self.row += 1
+
+    def save(self):
+        """
+        Save spreadsheet.
+        """
+        self.wb.save(self.filename)
 
 
 def load_agent(filename):
@@ -90,6 +218,8 @@ def main():
                         help="load scenario file.")
     parser.add_argument('--logfile', '-l', default=None,
                         help="create log-file.")
+    parser.add_argument('--excel', '-e', default=None,
+                        help="create spreadsheet.")
     parser.add_argument('--seed', type=int, default=None,
                         help="Seed random generator.")
     parser.add_argument('--fixed', '-x', action='store_true',
@@ -134,6 +264,15 @@ def main():
     else:
         logfile_path = None
 
+    if args.excel is not None:
+        # add extension'.xlxs' to excel-name
+        excel_file = args.excel + '.xlsx'
+        # set excel path
+        excel_path = Path(str(BASE_PATH / 'data' / 'logs' / excel_file))
+        excel = ExcelReport(excel_path)
+    else:
+        excel = None
+
     # reset total points
     total = [0 for _ in range(4)]
 
@@ -170,6 +309,12 @@ def main():
         # simulate 1 game
         points, log = simulate_game(agent1, agent2, agent3, agent4, dealer, scenario,
                                args.verbose, True, args.declaration)
+#        print(log)
+        # add log to spreadsheet
+        if excel is not None:
+            seed = args.seed + i if args.seed is not None else None
+            excel.add_log(seed, log, points)
+
         if logfile_path is not None:
             with logfile_path.open('a', encoding='utf-8') as lfile:
                 lfile.write("-----------------------------------------------------\n")
@@ -213,6 +358,10 @@ def main():
 
     print("===================================================================="
           "==========")
+
+    # save spreadsheet.
+    if excel is not None:
+        excel.save()
 
 if __name__ == '__main__':
     main()

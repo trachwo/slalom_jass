@@ -592,8 +592,8 @@ Let 2 bot-teams play against each other.
    usage: bots_vs_bots.py [-h] --bot13 BOT13 [--bot24 BOT24]
                           [--num-games NUM_GAMES] [--verbose]
                           [--first {1,2,3,4}] [--scenario SCENARIO]
-                          [--logfile LOGFILE] [--seed SEED] [--fixed]
-                          [--declaration {obenabe,undeufe}]
+                          [--logfile LOGFILE] [--excel EXCEL] [--seed SEED]
+                          [--fixed] [--declaration {obenabe,undeufe}]
    options:
       -h, --help            show this help message and exit
       --bot13 BOT13         type of Player1/Player3 bot.
@@ -607,11 +607,12 @@ Let 2 bot-teams play against each other.
                             load scenario file.
       --logfile LOGFILE, -l LOGFILE
                             create log-file.
+      --excel EXCEL, -e EXCEL
+                            create spreadsheet.
       --seed SEED           Seed random generator.
       --fixed, -x           Fixed first player.
       --declaration {undeufe,obenabe}, -d {undeufe,obenabe}
                             Select type of game.
-
 
 ```
 
