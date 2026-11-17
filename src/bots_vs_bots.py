@@ -128,7 +128,7 @@ class ExcelReport():
         sheet[f"U{row}"] = points[1] + points[3]
 
         for row_of_cell_objects in sheet[f'A{row}:U{row}']:
-             for cell_obj in row_of_cell_objects:
+            for cell_obj in row_of_cell_objects:
                 cell_obj.font = Font(size=8)
                 if cell_obj.column in [16, 17, 18, 19, 20, 21]:
                     cell_obj.alignment = Alignment(horizontal='right')
@@ -308,7 +308,7 @@ def main():
                   "--------------------")
         # simulate 1 game
         points, log = simulate_game(agent1, agent2, agent3, agent4, dealer, scenario,
-                               args.verbose, True, args.declaration)
+                               args.verbose, args.declaration)
 #        print(log)
         # add log to spreadsheet
         if excel is not None:

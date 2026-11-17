@@ -867,7 +867,7 @@ class GameState:
 
 
 def simulate_game(agent1, agent2, agent3, agent4, dealer=3, scenario=None,
-                  verbose=False, return_log=False, declaration=None):
+                  verbose=False, declaration=None):
     """
     Let 4 agents play a single round of Slalom-Jass against each other.
 
@@ -879,16 +879,13 @@ def simulate_game(agent1, agent2, agent3, agent4, dealer=3, scenario=None,
         dealer (int):           this round's dealer.
         scenario (Scenario):    scenario loaded from CSV-file.
         verbose (bool):         True => show details.
-        return_log (bool):      True => return list of log strings.
         declaration (str):      None, 'Obenabe', or 'Undeufe'.
 
     Returns:
-        tuple:     points per agent, list of log strings (or None).
+        tuple:     points per agent, list of log strings.
     """
     # map player index to agent
     agent_map = {0: agent1, 1: agent2, 2: agent3, 3: agent4}
-
-    log = None  # return_log=False => return None
 
     # create gamestate for new round
     # with Player4 as dealer Player1 has to declare first.
@@ -899,11 +896,11 @@ def simulate_game(agent1, agent2, agent3, agent4, dealer=3, scenario=None,
         # print cards per player
         game.print_state()
         print()
-
-    if return_log:
-        log = [""]  # create log with empty header line
-        # add 4 game state lines
-        log += (game.log_state())
+    
+    # create log with empty header line
+    log = [""]
+    # add 4 game state lines
+    log += (game.log_state())
 
     # play 9 tricks of one round.
     while not game.is_over():
@@ -934,26 +931,25 @@ def simulate_game(agent1, agent2, agent3, agent4, dealer=3, scenario=None,
                 # add to table cards
                 print(f"{game.show_table_cards()}  {str(play)}")
 
-        if return_log:
-            name = game.players[game.next_player].name
-            # create 1 log-string per trick.
-            if game.tricks >= 0:
-                if game.turns == 0:
-                    if game.tricks == 0:
-                        # add header line to log
-                        log[0] = (f"{name}: "
-                                  f"{'Obenabe' if game.obenabe else 'Undeufe'}")
-                    # 1st player added a card
-                    direction = '\u2193' if game.higher_card_wins() else '\u2191'
-                    # Trick-Number, Direction, Leading Player, Cards in Trick 
-                    log_str = (f"   Trick{game.tricks + 1} {direction} "
-                               f"{name}: {str(play)}")
-                elif game.turns == 3:
-                    # 4th player added a card  => trick complete.
-                    log.append(log_str + f" {str(play)}")
-                else:
-                    # 2nd and 3rd player added a card
-                    log_str = log_str + f" {str(play)}"
+        # create 1 log-string per trick.
+        name = game.players[game.next_player].name
+        if game.tricks >= 0:
+            if game.turns == 0:
+                if game.tricks == 0:
+                    # add header line to log
+                    log[0] = (f"{name}: "
+                              f"{'Obenabe' if game.obenabe else 'Undeufe'}")
+                # 1st player added a card
+                direction = '\u2193' if game.higher_card_wins() else '\u2191'
+                # Trick-Number, Direction, Leading Player, Cards in Trick 
+                log_str = (f"   Trick{game.tricks + 1} {direction} "
+                           f"{name}: {str(play)}")
+            elif game.turns == 3:
+                # 4th player added a card  => trick complete.
+                log.append(log_str + f" {str(play)}")
+            else:
+                # 2nd and 3rd player added a card
+                log_str = log_str + f" {str(play)}"
 
         # apply selected card to game state
         game = game.apply_play(play)

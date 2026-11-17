@@ -6,7 +6,6 @@ Collects publicly known information about the card distribution.
 NOTE: testing is done in game.py to avoid problems due to circular imports.
 """
 from random import choice
-import pprint
 
 from slalom_jass.cards import Suit, Rank, Card, RANK_ORDER, SUIT_ORDER
 from slalom_jass.game import NOF_PLAYERS
