@@ -110,6 +110,19 @@ class Player:
         """
         self.tricks.append(trick)
 
+    def copy(self):
+        """
+        Make a copy of this player.
+
+        Returns:
+            Player: copy of player.
+        """
+        clone = Player(self.name)
+        clone.hand = self.hand[:]
+        clone.tricks = self.tricks[:]
+        return clone
+
+
     def serialize(self):
         """
         Convert Player object to dictionary.

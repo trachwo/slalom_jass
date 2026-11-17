@@ -6,7 +6,7 @@ Collects publicly known information about the card distribution.
 NOTE: testing is done in game.py to avoid problems due to circular imports.
 """
 from random import choice
-from copy import deepcopy
+import pprint
 
 from slalom_jass.cards import Suit, Rank, Card, RANK_ORDER, SUIT_ORDER
 from slalom_jass.game import NOF_PLAYERS
@@ -63,6 +63,25 @@ class GameInfo:
 
         # pool of unobserved cards (= cards in the hands of other players)
         self.pool = []
+
+    def copy(self):
+        """
+        Make a copy of the GameInfo object.
+
+        Returns:
+            GameInfo:   copy of game info.
+        """
+        clone = GameInfo()
+
+        # clone dictionary: {int: {int: [int, int, int, int]}}
+        clone.c2p_map = {ok: {ik: iv[:] for (ik, iv) in ov.items()}
+                         for (ok, ov) in self.c2p_map.items()}
+        # clone list: [[int, int, [int, int, ...], [int, int, ...], ...]
+        clone.p2c_map  = [[entry[0], entry[1], entry[2][:], entry[3][:]]
+                          for entry in self.p2c_map]
+        # clone list: [Card, Card, ...]
+        clone.pool = self.pool[:]
+        return clone
 
     def serialize(self):
         """
@@ -179,7 +198,8 @@ class GameInfo:
 
         # make a deep copy of the cards->players map, because we change it
         # while building the player records.
-        c2p_map = deepcopy(self.c2p_map)
+        c2p_map = {ok: {ik: iv[:] for (ik, iv) in ov.items()}
+                   for (ok, ov) in self.c2p_map.items()}
 
         # for each of the other (than observer) players, create a list of
         # indices referencing the pool cards which could be in their hands.
@@ -195,7 +215,7 @@ class GameInfo:
                     # available cards.
                     if len(c2p_map[c.suit.value][c.rank.value]) == 1:
                         # only player who can hold this card
-                        # => add it directly to his selected cards == 2
+                        # => add it directly to his selected cards
                         rec[3].append(i)
                     else:
                         # other players could hold this card
@@ -314,7 +334,8 @@ class GameInfo:
 
         # make a deep copy of the pool card map (because cards will be removed
         # from the list of available cards during redistribution).
-        p2c = deepcopy(self.p2c_map)
+        p2c = [[entry[0], entry[1], entry[2][:], entry[3][:]]
+                          for entry in self.p2c_map]
 
         # calculate then number of already distributed cards (cards mapped to
         # only one player).

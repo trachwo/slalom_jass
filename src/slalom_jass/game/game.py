@@ -81,7 +81,6 @@ gets an addtitional 5 points.
 """
 
 from collections import Counter
-from copy import deepcopy
 import json
 
 from slalom_jass.cards import Suit, Rank, Card, Deck, SUIT_ORDER
@@ -510,11 +509,11 @@ class GameState:
         # make real copy of game state attributes
         tricks = self.tricks
         turns = self.turns
-        players = deepcopy(self.players)
+        players = [player.copy() for player in self.players]
         next_player = self.next_player
         table = self.table[:]
         obenabe = self.obenabe
-        info = deepcopy(self.info)
+        info = self.info.copy()
 
         if declaration == 'Schiebe':
             # ask next player for declaration
@@ -555,11 +554,11 @@ class GameState:
         # make real copy of game state attributes
         tricks = self.tricks
         turns = self.turns
-        players = deepcopy(self.players)
+        players = [player.copy() for player in self.players]
         next_player = self.next_player
         table = self.table[:]
         obenabe = self.obenabe
-        info = deepcopy(self.info)
+        info = self.info.copy()
 
         # update game info
         info.update(next_player, table, card, verbose)
@@ -721,9 +720,9 @@ class GameState:
             GameState:      clone of current game state.
         """
         # make a real (deep) copy of the players list
-        players = deepcopy(self.players)
+        players = [player.copy() for player in self.players]
         # make a real (deep) copy of the game info
-        info = deepcopy(self.info)
+        info = self.info.copy()
         tricks = self.tricks                    # tricks played
         turns = self.turns                      # turns played in trick
         next_player = self.next_player          # next player to play
@@ -755,9 +754,9 @@ class GameState:
             GameState:      clone of current game state.
         """
         # make a real (deep) copy of the players list
-        players = deepcopy(self.players)
+        players = [player.copy() for player in self.players]
         # make a real (deep) copy of the game info
-        info = deepcopy(self.info)
+        info = self.info.copy()
         tricks = self.tricks                    # tricks played
         turns = self.turns                      # turns played in trick
         next_player = self.next_player          # next player to play
