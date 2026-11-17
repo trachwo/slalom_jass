@@ -885,7 +885,7 @@ def simulate_game(idx, agent1, agent2, agent3, agent4, dealer=3, scenario=None,
         seed (int):             random generator base seed.
 
     Returns:
-        tuple:     points per agent, list of log strings, used seed.
+        tuple:     game index, points per agent, list of log strings.
     """
     # random generator seed has been specified
     if seed is not None:
@@ -982,7 +982,7 @@ def simulate_game(idx, agent1, agent2, agent3, agent4, dealer=3, scenario=None,
                 print("  + 5")   # for last trick
             else:
                 print()
-    return points, log, seed 
+    return idx, points, log
 
 def finish_game(game, agent1, agent2, agent3, agent4, verbose=False):
     """

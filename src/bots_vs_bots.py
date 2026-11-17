@@ -4,8 +4,8 @@ Let 1 bot play a round of Slalom-Jass against 3 other bots.
 from pathlib import Path
 import argparse
 import time
-import random
 import json
+import multiprocessing
 import openpyxl
 from openpyxl.styles import Font, Alignment
 
@@ -229,12 +229,14 @@ def main():
                         help="Select type of game.")
     args = parser.parse_args()
 
-
     # create agents.
     agent1 = load_agent(args.bot13)
     agent2 = load_agent(args.bot24)
     agent3 = load_agent(args.bot13)
     agent4 = load_agent(args.bot24)
+
+    cores = multiprocessing.cpu_count()
+    print(f"### Number of cores: {cores}")
 
     # the dealer is the player on the left of the 1st player
     # e.g. Player1 (game.players[0]) shall play first
@@ -303,13 +305,13 @@ def main():
             print("\n----------------------------------------------------------"
                   "--------------------")
         # simulate 1 game
-        points, log, seed = simulate_game(i, agent1, agent2, agent3, agent4,
+        idx, points, log = simulate_game(i, agent1, agent2, agent3, agent4,
                                           dealer, scenario, args.verbose,
                                           args.declaration, args.seed)
 #        print(log)
         # add log to spreadsheet
         if excel is not None:
-            excel.add_log(seed, log, points)
+            excel.add_log(args.seed + idx, log, points)
 
         if logfile_path is not None:
             with logfile_path.open('a', encoding='utf-8') as lfile:
