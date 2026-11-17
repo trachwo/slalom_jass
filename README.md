@@ -96,6 +96,12 @@ Install Python3:
 
 see <https://realpython.com/installing-python/>
 
+## openpyxl ##
+
+In order to create xcell-files we have to install openpyxl:
+
+   $ pip install openpyxl
+
 ## Slalom-Jass ##
 
 Clone the 'slalom_jass' repository or downnload the zip-file from **github** at
