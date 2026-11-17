@@ -193,50 +193,22 @@ def load_agent(filename):
 
     return agent
 
-
-def main():
+def get_options(args):
     """
-    Let 2 agents play against 2 agents.
+    Get options from parsed arguments.
 
-    Partners (P1/P3, P2/P4) have the same type.
+    Args:
+        args (argparse.Namespace):  parsed commandline argurments.
 
-    Agent types and parameters are loaded from json-files.
+    Returns:
+        tuple: agents, dealer, scenario, logfile_path, excel.
     """
-    parser = argparse.ArgumentParser()
-    parser.add_argument('--bot13', required=True,
-                        help="type of Player1/Player3 bot." )
-    parser.add_argument('--bot24', default='simple',
-                        help="type of Player2/Player4 bot.")
-    parser.add_argument('--num-games', '-n', type=int, default=10,
-                        help="number of games played.")
-    parser.add_argument('--verbose', '-v', action='store_true',
-                        help="show played cards.")
-    parser.add_argument('--first', '-f', default=1, type=int,
-                        choices={1, 2, 3, 4},
-                        help="Set starting player (1-4).")
-    parser.add_argument('--scenario', '-s', default=None,
-                        help="load scenario file.")
-    parser.add_argument('--logfile', '-l', default=None,
-                        help="create log-file.")
-    parser.add_argument('--excel', '-e', default=None,
-                        help="create spreadsheet.")
-    parser.add_argument('--seed', type=int, default=None,
-                        help="Seed random generator.")
-    parser.add_argument('--fixed', '-x', action='store_true',
-                        help="Fixed first player.")
-    parser.add_argument('--declaration', '-d', default=None, type=str,
-                        choices={'obenabe', 'undeufe'},
-                        help="Select type of game.")
-    args = parser.parse_args()
-
     # create agents.
     agent1 = load_agent(args.bot13)
     agent2 = load_agent(args.bot24)
     agent3 = load_agent(args.bot13)
     agent4 = load_agent(args.bot24)
-
-    cores = multiprocessing.cpu_count()
-    print(f"### Number of cores: {cores}")
+    agents = [agent1, agent2, agent3, agent4]
 
     # the dealer is the player on the left of the 1st player
     # e.g. Player1 (game.players[0]) shall play first
@@ -275,6 +247,118 @@ def main():
     else:
         excel = None
 
+    return agents, dealer, scenario, logfile_path, excel
+
+
+def simulate_parallel_games(args):
+    """
+    Simulate the specified number of games on multiple CPU-cores.
+
+    Args:
+        args (argparse.Namespace):   parsed commandline arguments.
+    """
+    # preprocess commandline arguments.
+    agents, dealer, scenario, logfile_path, excel = get_options(args)
+
+    # get number of availble cores.
+    cores = multiprocessing.cpu_count()
+
+    # reset total points
+    total = [0 for _ in range(4)]
+
+    if not args.verbose:
+        # print statistics header
+        print()
+        print("          |     |     |     |     |    Average    |")
+        print("    Games |  P1 |  P2 |  P3 |  P4 | P1+P3 | P2+P4 | Time")
+        print("----------+-----+-----+-----+-----+-------+-------+-------")
+
+    if logfile_path is not None:
+        with logfile_path.open('w', encoding='utf-8') as lfile:
+            lfile.write(
+                f"-----------------------------------------------------\n"
+                f"Scenario: "
+                f"{args.scenario if args.scenario is not None else '---'}\n"
+                f"Bots P1/P3: {args.bot13}\n"
+                f"Bots P2/P4: {args.bot24}\n"
+                f"Base Seed: {args.seed if args.seed is not None else '---'}\n"
+                )
+
+    input_params = []
+    start_time = 0
+    for i in range(args.num_games):
+        if len(input_params) == 0:
+            start_time = time.time()
+        input_params.append([i, agents, dealer, scenario, False,
+                             args.declaration, args.seed])
+        # next dealer
+        if not args.fixed:
+            # new dealer and starting player (shift 1 to the right)  
+            dealer = (dealer + 1) % 4
+        if i < args.num_games - 1 and len(input_params) < cores:
+            continue
+
+        with multiprocessing.Pool(cores) as pool:
+            results = pool.starmap(simulate_game, input_params)
+
+        duration = (time.time() - start_time) / len(input_params)
+        for idx, points, log in results:
+            print(f"{str(idx + 1) + '/' + str(args.num_games):>9} ",
+                  end='')
+            # add log to spreadsheet
+            if excel is not None:
+                excel.add_log(idx + args.seed, log, points)
+
+            if logfile_path is not None:
+                with logfile_path.open('a', encoding='utf-8') as lfile:
+                    lfile.write("-----------------------------------------------------\n")
+                    lfile.write(f"   {str(i + 1) + '/' + str(args.num_games)}   "
+                                f"{log[0]}   P1/P3:{points[0] + points[2]}   "
+                                f"P2/P4: {points[1] + points[3]}\n")
+                    lfile.write("-----------------------------------------------------\n")
+                    for line in log[1:]:
+                        lfile.write(line + '\n')
+
+            # calculate current total and average
+            total = [total[x] + points[x] for x in range(len(total))]
+            avg_13 = (total[0] + total[2]) / (i + 1)
+            avg_24 = (total[1] + total[3]) / (i + 1)
+
+            print(f"| {points[0]:>3} | {points[1]:>3} | {points[2]:>3} |"
+                  f" {points[3]:>3} | {avg_13:5.1f} | {avg_24:5.1f} |"
+                  f" {duration:.1f}s")
+        input_params = []
+
+    # print final score
+    print("--------------------------------------------------------------------"
+          "----------")
+    for i in range(4):
+        print(f"Player{i+1}: {total[i]:>20} {total[i]/args.num_games:6.1f}")
+    print()
+    print(f"Player1 + Player3: {total[0] + total[2]:>10}"
+          f" {(total[0] + total[2])/args.num_games:6.1f}")
+
+    print(f"Player2 + Player4: {total[1] + total[3]:>10}"
+          f" {(total[1] + total[3])/args.num_games:6.1f}")
+
+    print("===================================================================="
+          "==========")
+
+    # save spreadsheet.
+    if excel is not None:
+        excel.save()
+
+
+def simulate_sequential_games(args):
+    """
+    Simulate the specified number of games on single CPU-core.
+
+    Args:
+        args (argparse.Namespace):   parsed commandline arguments.
+    """
+    # preprocess commandline arguments.
+    agents, dealer, scenario, logfile_path, excel = get_options(args)
+
     # reset total points
     total = [0 for _ in range(4)]
 
@@ -305,9 +389,10 @@ def main():
             print("\n----------------------------------------------------------"
                   "--------------------")
         # simulate 1 game
-        idx, points, log = simulate_game(i, agent1, agent2, agent3, agent4,
-                                          dealer, scenario, args.verbose,
-                                          args.declaration, args.seed)
+        idx, points, log = simulate_game(
+            i, agents, dealer, scenario, args.verbose, args.declaration,
+            args.seed)
+
 #        print(log)
         # add log to spreadsheet
         if excel is not None:
@@ -360,6 +445,49 @@ def main():
     # save spreadsheet.
     if excel is not None:
         excel.save()
+
+def main():
+    """
+    Let 2 agents play against 2 agents.
+
+    Partners (P1/P3, P2/P4) have the same type.
+
+    Agent types and parameters are loaded from json-files.
+    """
+    parser = argparse.ArgumentParser()
+    parser.add_argument('--bot13', required=True,
+                        help="type of Player1/Player3 bot." )
+    parser.add_argument('--bot24', default='simple',
+                        help="type of Player2/Player4 bot.")
+    parser.add_argument('--num-games', '-n', type=int, default=10,
+                        help="number of games played.")
+    parser.add_argument('--verbose', '-v', action='store_true',
+                        help="show played cards.")
+    parser.add_argument('--first', '-f', default=1, type=int,
+                        choices={1, 2, 3, 4},
+                        help="Set starting player (1-4).")
+    parser.add_argument('--scenario', '-s', default=None,
+                        help="load scenario file.")
+    parser.add_argument('--logfile', '-l', default=None,
+                        help="create log-file.")
+    parser.add_argument('--excel', '-e', default=None,
+                        help="create spreadsheet.")
+    parser.add_argument('--seed', type=int, default=None,
+                        help="Seed random generator.")
+    parser.add_argument('--fixed', '-x', action='store_true',
+                        help="Fixed first player.")
+    parser.add_argument('--declaration', '-d', default=None, type=str,
+                        choices={'obenabe', 'undeufe'},
+                        help="Select type of game.")
+    parser.add_argument('--parallel', '-p', action='store_true',
+                        help="Use parallel processing.")
+    args = parser.parse_args()
+
+    if args.parallel:
+        simulate_parallel_games(args)
+    else:
+        simulate_sequential_games(args)
+
 
 if __name__ == '__main__':
     main()

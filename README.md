@@ -218,6 +218,8 @@ After installation, you should see the following file structure:
 >                        +--- logs
 >                               |
 >                               +--- my_log.log
+>                               |
+>                               +--- my_excel.xlsx
 
 **README.md**: This file.
 
@@ -262,6 +264,7 @@ After installation, you should see the following file structure:
 
 **src/data/logs**: Log-files recorded with bots_vs_bots.py.
 - **my_log.log**: Example of log-file.
+- **my_excel.xlsx**: Example of excel-file.
 
 # Agents #
 
@@ -600,6 +603,8 @@ Let 2 bot-teams play against each other.
                           [--first {1,2,3,4}] [--scenario SCENARIO]
                           [--logfile LOGFILE] [--excel EXCEL] [--seed SEED]
                           [--fixed] [--declaration {obenabe,undeufe}]
+                          [--parallel]
+]
    options:
       -h, --help            show this help message and exit
       --bot13 BOT13         type of Player1/Player3 bot.
@@ -619,7 +624,7 @@ Let 2 bot-teams play against each other.
       --fixed, -x           Fixed first player.
       --declaration {undeufe,obenabe}, -d {undeufe,obenabe}
                             Select type of game.
-
+      --parallel, -p        Use parallel processing.
 ```
 
 **Example 1:** let *ismcts* play *1* round against *simple*:

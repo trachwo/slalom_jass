@@ -867,17 +867,14 @@ class GameState:
         self.deserialize(data)
 
 
-def simulate_game(idx, agent1, agent2, agent3, agent4, dealer=3, scenario=None,
-                  verbose=False, declaration=None, seed=None):
+def simulate_game(idx, agents, dealer=3, scenario=None, verbose=False,
+                  declaration=None, seed=None):
     """
     Let 4 agents play a single round of Slalom-Jass against each other.
 
     Args:
         idx (int):              game index.
-        agent1 (Agent):         bot playing Player1.
-        agent2 (Agent):         bot playing Player2.
-        agent3 (Agent):         bot playing Player3.
-        agent4 (Agent):         bot playing Player4.
+        agents (list):          bots playing Player1 .. Player4.
         dealer (int):           this round's dealer.
         scenario (Scenario):    scenario loaded from CSV-file.
         verbose (bool):         True => show details.
@@ -892,8 +889,8 @@ def simulate_game(idx, agent1, agent2, agent3, agent4, dealer=3, scenario=None,
         seed = seed + idx   # => unique seed per game
         random.seed(seed)
 
-    # map player index to agent
-    agent_map = {0: agent1, 1: agent2, 2: agent3, 3: agent4}
+    # map player index to agents
+    agent_map = {0: agents[0], 1: agents[1], 2: agents[2], 3: agents[3]}
 
     # create gamestate for new round
     # with Player4 as dealer Player1 has to declare first.
@@ -984,23 +981,20 @@ def simulate_game(idx, agent1, agent2, agent3, agent4, dealer=3, scenario=None,
                 print()
     return idx, points, log
 
-def finish_game(game, agent1, agent2, agent3, agent4, verbose=False):
+def finish_game(game, agents, verbose=False):
     """
     Let 4 agents finish a round of Slalom-Jass from a specified state.
 
     Args:
         game (GameState):   current state of the game.
-        agent1 (Agent):     bot playing Player1.
-        agent2 (Agent):     bot playing Player2.
-        agent3 (Agent):     bot playing Player3.
-        agent4 (Agent):     bot playing Player4.
+        agents (list):      bots playing Player1 ... Player4.
         verbose (bool):     True => show details.
 
     Returns:
         tuple:     points per agent.
     """
     # map player index to agent
-    agent_map = {0: agent1, 1: agent2, 2: agent3, 3: agent4}
+    agent_map = {0: agents[0], 1: agents[1], 2: agents[2], 3: agents[3]}
 
     # finish the game from this game state
     while not game.is_over():
