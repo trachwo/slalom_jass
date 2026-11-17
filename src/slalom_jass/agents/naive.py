@@ -561,16 +561,16 @@ class SimpleBot(Agent):
             # play a number of obenabe games
             game = game_state.clone_and_randomize()
             game = game.apply_play('Obenabe')
-            points = finish_game(game, SimpleBot(), SimpleBot(), SimpleBot(),
-                                 SimpleBot(), False)
+            points = finish_game(game, [SimpleBot(), SimpleBot(), SimpleBot(),
+                                 SimpleBot()], False)
             obenabe_points += points[player]
             obenabe_points += points[partner]
 
             # play a number of undeufe games
             game = game_state.clone_and_randomize()
             game = game.apply_play('Undeufe')
-            points = finish_game(game, SimpleBot(), SimpleBot(), SimpleBot(),
-                                 SimpleBot(), False)
+            points = finish_game(game, [SimpleBot(), SimpleBot(), SimpleBot(),
+                                 SimpleBot()], False)
             undeufe_points += points[player]
             undeufe_points += points[partner]
 #        print(f"Average Obenabe points: {obenabe_points / nof_eval_games:.1f}")
@@ -620,7 +620,7 @@ class SimpleBot(Agent):
 
 if __name__ == '__main__':
 #    simulate_game(idx=0, RandomBot(), RandomBot(), RandomBot(), RandomBot(), 3, None, True)
-    simulate_game(0, SimpleBot(nof_eval_games=100),
+    simulate_game(0, [SimpleBot(nof_eval_games=100),
                   SimpleBot(nof_eval_games=100),
                   SimpleBot(nof_eval_games=100),
-                  SimpleBot(nof_eval_games=100), 3, None, True)
+                  SimpleBot(nof_eval_games=100)], 3, None, True)
