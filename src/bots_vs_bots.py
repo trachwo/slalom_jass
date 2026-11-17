@@ -305,9 +305,13 @@ def simulate_parallel_games(args):
         for idx, points, log in results:
             print(f"{str(idx + 1) + '/' + str(args.num_games):>9} ",
                   end='')
+
             # add log to spreadsheet
             if excel is not None:
-                excel.add_log(idx + args.seed, log, points)
+                if args.seed is not None:
+                    excel.add_log(idx + args.seed, log, points)
+                else:
+                    excel.add_log(None, log, points)
 
             if logfile_path is not None:
                 with logfile_path.open('a', encoding='utf-8') as lfile:
@@ -393,10 +397,12 @@ def simulate_sequential_games(args):
             i, agents, dealer, scenario, args.verbose, args.declaration,
             args.seed)
 
-#        print(log)
         # add log to spreadsheet
         if excel is not None:
-            excel.add_log(args.seed + idx, log, points)
+            if args.seed is not None:
+                excel.add_log(idx + args.seed, log, points)
+            else:
+                excel.add_log(None, log, points)
 
         if logfile_path is not None:
             with logfile_path.open('a', encoding='utf-8') as lfile:
