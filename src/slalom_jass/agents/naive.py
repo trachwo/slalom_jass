@@ -619,8 +619,8 @@ class SimpleBot(Agent):
 
 
 if __name__ == '__main__':
-#    simulate_game(RandomBot(), RandomBot(), RandomBot(), RandomBot(), 3, None, True)
-    simulate_game(SimpleBot(nof_eval_games=100),
+#    simulate_game(idx=0, RandomBot(), RandomBot(), RandomBot(), RandomBot(), 3, None, True)
+    simulate_game(0, SimpleBot(nof_eval_games=100),
                   SimpleBot(nof_eval_games=100),
                   SimpleBot(nof_eval_games=100),
                   SimpleBot(nof_eval_games=100), 3, None, True)

@@ -295,10 +295,6 @@ def main():
                 )
 
     for i in range(args.num_games):
-        if args.seed is not None:
-            # seed random generator => reproducible card distribution
-            random.seed(args.seed + i)
-
         start_time = time.time()
         print(f"{str(i + 1) + '/' + str(args.num_games):>9} ",
                end='')
@@ -307,12 +303,12 @@ def main():
             print("\n----------------------------------------------------------"
                   "--------------------")
         # simulate 1 game
-        points, log = simulate_game(agent1, agent2, agent3, agent4, dealer, scenario,
-                               args.verbose, args.declaration)
+        points, log, seed = simulate_game(i, agent1, agent2, agent3, agent4,
+                                          dealer, scenario, args.verbose,
+                                          args.declaration, args.seed)
 #        print(log)
         # add log to spreadsheet
         if excel is not None:
-            seed = args.seed + i if args.seed is not None else None
             excel.add_log(seed, log, points)
 
         if logfile_path is not None:

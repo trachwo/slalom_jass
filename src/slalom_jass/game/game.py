@@ -82,6 +82,7 @@ gets an addtitional 5 points.
 
 from collections import Counter
 import json
+import random
 
 from slalom_jass.cards import Suit, Rank, Card, Deck, SUIT_ORDER
 from slalom_jass.game.player import Player, NOF_PLAYERS
@@ -866,12 +867,13 @@ class GameState:
         self.deserialize(data)
 
 
-def simulate_game(agent1, agent2, agent3, agent4, dealer=3, scenario=None,
-                  verbose=False, declaration=None):
+def simulate_game(idx, agent1, agent2, agent3, agent4, dealer=3, scenario=None,
+                  verbose=False, declaration=None, seed=None):
     """
     Let 4 agents play a single round of Slalom-Jass against each other.
 
     Args:
+        idx (int):              game index.
         agent1 (Agent):         bot playing Player1.
         agent2 (Agent):         bot playing Player2.
         agent3 (Agent):         bot playing Player3.
@@ -880,10 +882,16 @@ def simulate_game(agent1, agent2, agent3, agent4, dealer=3, scenario=None,
         scenario (Scenario):    scenario loaded from CSV-file.
         verbose (bool):         True => show details.
         declaration (str):      None, 'Obenabe', or 'Undeufe'.
+        seed (int):             random generator base seed.
 
     Returns:
-        tuple:     points per agent, list of log strings.
+        tuple:     points per agent, list of log strings, used seed.
     """
+    # random generator seed has been specified
+    if seed is not None:
+        seed = seed + idx   # => unique seed per game
+        random.seed(seed)
+
     # map player index to agent
     agent_map = {0: agent1, 1: agent2, 2: agent3, 3: agent4}
 
@@ -896,7 +904,7 @@ def simulate_game(agent1, agent2, agent3, agent4, dealer=3, scenario=None,
         # print cards per player
         game.print_state()
         print()
-    
+
     # create log with empty header line
     log = [""]
     # add 4 game state lines
@@ -974,7 +982,7 @@ def simulate_game(agent1, agent2, agent3, agent4, dealer=3, scenario=None,
                 print("  + 5")   # for last trick
             else:
                 print()
-    return points, log
+    return points, log, seed 
 
 def finish_game(game, agent1, agent2, agent3, agent4, verbose=False):
     """
