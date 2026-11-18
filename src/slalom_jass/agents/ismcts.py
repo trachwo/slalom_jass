@@ -366,7 +366,7 @@ class ISMCTSNode():
                 if p == self.parent.active_player:
                     self.wins += score[p]
 
-    def show_select(self, legal_plays, temperature, play):
+    def show_select(self, legal_plays, temperature, play, top):
         """
         Show details for SELECT phase in this node.
 
@@ -375,8 +375,10 @@ class ISMCTSNode():
                                     state.
             temperature (float):    temperature in UCB1 calculation.
             play (Card):            selected play.
+            top (bool):             True => children of root node.
         """
         uct_scores = []
+        win_rates = []
         # get a list of children reached via legal plays from this state
         legal_children = [child for child in self.children
                           if child.play in legal_plays]
@@ -393,10 +395,14 @@ class ISMCTSNode():
                         self.visits_per_play[str(child.play)])
                         / child.visits))
             ucb1 = win_rate + bonus
+            if top:
+                win_rates.append(f"{str(child.play)} :{win_rate * 100:.1f}%")
             uct_scores.append(f"{str(child.play)} :{ucb1:.2f}")
 
         print(f"P{self.active_player + 1}:"
-              f" {' '.join(uct_scores)}")
+              f" {'  '.join(uct_scores)}")
+        if top:
+            print(f"    {' '.join(win_rates)}")
         print(f"SELECT: {str(play)}")
 
     def show_expand(self, unexpanded, play):
@@ -617,8 +623,9 @@ class ISMCTSAgent(Agent):
                 # show debug info for specified trick and player
                 if (game_state.tricks == self.show_trick
                     and game_state.next_player == self.show_player):
-                    node.show_select(legal_plays, self.temperature,
-                                     selected_node.play)
+                    node.show_select(
+                        legal_plays, self.temperature, selected_node.play,
+                        node.parent == root_node)
 
                 # increment the 'visits' and 'visits_per_play' counts in the
                 # current node.

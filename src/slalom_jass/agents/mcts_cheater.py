@@ -267,24 +267,30 @@ class MCTSNode():
                 if p == self.parent.active_player:
                     self.wins += score[p]
 
-    def show_select(self, temperature):
+    def show_select(self, temperature, top):
         """
         Show details for SELECT phase in this node.
 
         Args:
             temperature (float):    temperature in UCB1 calculation.
+            top (bool):             children of root node.
         """
         uct_scores = []
+        win_rates = []
         for child in self.parent.children:
             # calculate UCB1
             win_rate = child.wins / child.visits
             bonus = (temperature
                     * math.sqrt(math.log(self.parent.visits) / child.visits))
             ucb1 = win_rate + bonus
+            if top:
+                win_rates.append(f"{str(child.play)} :{win_rate * 100:.1f}%")
             uct_scores.append(f"{str(child.play)} :{ucb1:.2f}")
 
         print(f"P{self.parent.active_player + 1}:"
-              f" {' '.join(uct_scores)}")
+              f" {'  '.join(uct_scores)}")
+        if top:
+            print(f"    {' '.join(win_rates)}")
         print(f"SELECT: {str(self.play)}")
 
     def show_expand(self, play):
@@ -470,7 +476,7 @@ class MCTSCheater(Agent):
                 # show debug info for specified trick and player
                 if (game_state.tricks == self.show_trick
                     and game_state.next_player == self.show_player):
-                    node.show_select(self.temperature)
+                    node.show_select(self.temperature, node.parent == root_node)
                 # apply play which leads to child to the current state
                 # => clone of original game enters corresponding (child) state.
                 state = state.apply_play(node.play)
