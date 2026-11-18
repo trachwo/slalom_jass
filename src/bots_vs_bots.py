@@ -359,8 +359,8 @@ def simulate_parallel_games(args):
 
             # calculate current total and average
             total = [total[x] + points[x] for x in range(len(total))]
-            avg_13 = (total[0] + total[2]) / (i + 1)
-            avg_24 = (total[1] + total[3]) / (i + 1)
+            avg_13 = (total[0] + total[2]) / (idx + 1)
+            avg_24 = (total[1] + total[3]) / (idx + 1)
 
             print(f"| {points[0]:>3} | {points[1]:>3} | {points[2]:>3} |"
                   f" {points[3]:>3} | {avg_13:5.1f} | {avg_24:5.1f} |"
