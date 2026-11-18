@@ -21,6 +21,14 @@ BASE_PATH = Path(__file__).resolve().parent
 class ExcelReport():
     """
     Spreadsheet for game data.
+
+    Attributes:
+        filename (str):             excel-filename.
+        wb (openpyxl.Workbook):     workbook.
+        total13 (int):              total score (Player1 + Player3)
+        total24 (int):              total score (Player1 + Player3)
+        nof_games (int):            number of games.
+        row (int):                  next empty row.
     """
     def __init__(self, filename):
         """
@@ -30,11 +38,18 @@ class ExcelReport():
             filename (str):     name of xlsx-file.
         """
         self.filename = filename
+        self.total13 = 0
+        self.total24 = 0
+        self.nof_games = 0
 
         # try to load existing spreadsheet
         try:
             self.wb = openpyxl.load_workbook(filename)
             sheet = self.wb.active
+            self.nof_games = sheet.max_row - 2
+            for row in range(3, sheet.max_row + 1):
+                self.total13 += sheet[f"T{row}"].value
+                self.total24 += sheet[f"U{row}"].value
 
         except FileNotFoundError:
             # File doesn't exist => create new spreadsheet.
@@ -70,20 +85,26 @@ class ExcelReport():
             sheet['S2'] = 'P4'
             sheet['T2'] = 'P1+P3'
             sheet['U2'] = 'P2+P4'
+            sheet.merge_cells('V1:W1')
+            sheet['V1'] = 'Average'
+            sheet['V2'] = 'P1+P3'
+            sheet['W2'] = 'P2+P4'
 
             # change header font
             header_font = Font(bold=True)
-            for row_of_cell_objects in sheet['A1:U2']:
+            for row_of_cell_objects in sheet['A1:W2']:
                 for cell_obj in row_of_cell_objects:
                     cell_obj.font = header_font
                     cell_obj.alignment = Alignment(horizontal='center')
 
-            # change column dimensions
+            # set player hand columns dimension 
             for col in ['B', 'C', 'D', 'E']:
                 sheet.column_dimensions[col].width = 27
 
+            # set declaration column dimension 
             sheet.column_dimensions['F'].width = 15
 
+            # set trick columns dimension 
             for col in ['G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O']:
                 sheet.column_dimensions[col].width = 15
 
@@ -126,15 +147,28 @@ class ExcelReport():
         sheet[f"S{row}"] = points[3]
         sheet[f"T{row}"] = points[0] + points[2]
         sheet[f"U{row}"] = points[1] + points[3]
+        sheet[f"T{row}"] = points[0] + points[2]
+        sheet[f"U{row}"] = points[1] + points[3]
+        self.total13 += sheet[f"T{row}"].value
+        self.total24 += sheet[f"U{row}"].value
+        self.nof_games += 1
+        sheet[f"V{row}"] = self.total13 / self.nof_games
+        sheet[f"W{row}"] = self.total24 / self.nof_games
 
-        for row_of_cell_objects in sheet[f'A{row}:U{row}']:
+        for row_of_cell_objects in sheet[f'A{row}:W{row}']:
             for cell_obj in row_of_cell_objects:
                 cell_obj.font = Font(size=8)
+                # Set alginment of Scores to right
                 if cell_obj.column in [16, 17, 18, 19, 20, 21]:
                     cell_obj.alignment = Alignment(horizontal='right')
+                # Set alginment of Average to right with precision .1f
+                if cell_obj.column in [22, 23]:
+                    cell_obj.alignment = Alignment(horizontal='right')
+                    cell_obj.number_format = '0.0'
+                # Set alignment of Seed, Hands, and Declaration to center
                 if cell_obj.column in [1, 2, 3, 4, 5, 6]:
                     cell_obj.alignment = Alignment(horizontal='center')
-
+        # set index of next empty row
         self.row += 1
 
     def save(self):
