@@ -251,13 +251,13 @@ class GameState:
         Deal cards and move to declaration phase.
 
         If a scenario has been specified, use the card distribution from the
-        scenario. If 'Obenabe' or 'Undeufe' has been specified, skip the
+        scenario. If 'obenabe' or 'undeufe' has been specified, skip the
         declaration state, i.e. the player following the dealer plays 1st card
         for 'Obenabe' or 'Undeufe' game. 
 
         Args:
             scenario (Scenario): card distribution loaded from scenario file.
-            declaration (str): 'None', 'Obenabe', or 'Undeufe'.
+            declaration (str): 'None', 'obenabe', or 'undeufe'.
         """
         # game must be in initial state: tricks = -1, turns = 0
         if self.tricks != -1:
@@ -285,7 +285,7 @@ class GameState:
         self.turns = 1      # next game state: tricks = -1, turns = 1
 
         if declaration is not None:
-            self.obenabe = (declaration == 'Obenabe')
+            self.obenabe = (declaration.lower() == 'obenabe')
             self.tricks = 0     # skip declaration phase
             self.turns = 0      # next player plays 1st card of 1st trick
 
@@ -516,7 +516,7 @@ class GameState:
         obenabe = self.obenabe
         info = self.info.copy()
 
-        if declaration == 'Schiebe':
+        if declaration.lower() == 'schiebe':
             # ask next player for declaration
             turns += 1
             if turns > 5:
@@ -524,9 +524,10 @@ class GameState:
                 # dealer has to make a declaration.
                 raise ValueError("Illegal 'Schiebe' action!")
             next_player = (next_player + 1) % NOF_PLAYERS
-        elif declaration == 'Obenabe' or declaration == 'Undeufe':
+        elif (declaration.lower() == 'obenabe'
+              or declaration.lower() == 'undeufe'):
             # player made a declaration => stays next player
-            obenabe = True if declaration == 'Obenabe' else False
+            obenabe = True if declaration.lower() == 'obenabe' else False
             # reset tricks and turns counters
             tricks = 0
             turns = 0
@@ -613,7 +614,7 @@ class GameState:
         """
         if self.tricks < 0:
             # declaration phase
-            if play not in ['Schiebe', 'Obenabe', 'Undeufe']:
+            if play.lower() not in ['schiebe', 'obenabe', 'undeufe']:
                 raise ValueError(f"{play} is not a legal declaration!")
             return self.apply_declaration(play)
 
@@ -878,7 +879,7 @@ def simulate_game(idx, agents, dealer=3, scenario=None, verbose=False,
         dealer (int):           this round's dealer.
         scenario (Scenario):    scenario loaded from CSV-file.
         verbose (bool):         True => show details.
-        declaration (str):      None, 'Obenabe', or 'Undeufe'.
+        declaration (str):      None, 'obenabe', or 'undeufe'.
         seed (int):             random generator base seed.
 
     Returns:
